@@ -3,7 +3,7 @@ from collections import deque
 from uno.backend.models.baralho import Baralho
 import random
 from uno.backend.models.pilha_descarte import PilhaDescarte
-
+from uno.backend.models.config import MAO_INICIAL
 class Partida:
     '''Classe que representa uma partida de UNO.'''
     
@@ -30,7 +30,7 @@ class Partida:
         self._turno += 1
         self._jogadores.rotate(-1)
 
-    def distribuir_cartas(self, baralho: Baralho, mao_inicial: int = 7) -> None:
+    def distribuir_cartas(self, baralho: Baralho, mao_inicial: int = MAO_INICIAL) -> None:
         '''Distribui cartas para os jogadores da partida.'''
         for jogador in self._jogadores:
             for _ in range(mao_inicial):
@@ -46,4 +46,4 @@ class Partida:
         lista_jogadores = list(self._jogadores)
         random.shuffle(lista_jogadores)
         self._jogadores = deque(lista_jogadores)
-
+    

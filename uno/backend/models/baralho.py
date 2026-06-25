@@ -1,6 +1,8 @@
+'''O arquivo `baralho.py` contém a classe `Baralho`, que representa um baralho de cartas do jogo UNO.'''
 from uno.backend.models.carta import Carta
 from collections import deque
 import random
+from uno.backend.models.config import EMBARALHAR_PADRAO
 
 class Baralho:
     '''Classe que representa um baralho de UNO.'''
@@ -14,7 +16,7 @@ class Baralho:
         '''Retorna a quantidade de cartas no baralho.'''
         return len(self._cartas)
 
-    def embaralhar(self, numero_embaralhadas: int = 7) -> None:
+    def embaralhar(self, numero_embaralhadas: int = EMBARALHAR_PADRAO) -> None:
         '''Embaralha o baralho.'''
         cartas_lista = list(self._cartas)
         for _ in range(numero_embaralhadas):
