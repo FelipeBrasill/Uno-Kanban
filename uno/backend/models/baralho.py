@@ -14,10 +14,9 @@ class Baralho:
         '''Retorna a quantidade de cartas no baralho.'''
         return len(self._cartas)
 
-    def embaralhar(self) -> None:
+    def embaralhar(self, numero_embaralhadas: int = 7) -> None:
         '''Embaralha o baralho.'''
         cartas_lista = list(self._cartas)
-        numero_embaralhadas = 7
         for _ in range(numero_embaralhadas):
             random.shuffle(cartas_lista)
         self._cartas = deque(cartas_lista)
