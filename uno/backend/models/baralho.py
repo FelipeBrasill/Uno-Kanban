@@ -17,7 +17,9 @@ class Baralho:
     def embaralhar(self) -> None:
         '''Embaralha o baralho.'''
         cartas_lista = list(self._cartas)
-        random.shuffle(cartas_lista)
+        numero_embaralhadas = 7
+        for _ in range(numero_embaralhadas):
+            random.shuffle(cartas_lista)
         self._cartas = deque(cartas_lista)
 
     def retirar_carta(self) -> Carta:
