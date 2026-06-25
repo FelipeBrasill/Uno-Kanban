@@ -4,7 +4,7 @@ from uno.backend.models.carta import Carta
 
 class Jogador:
     def __init__(self, nome: str):
-        self._nome : str = nome
+        self.nome : str = nome
         self._mao : Mao = Mao()
         self._flag_desistiu : bool = False
 

@@ -27,3 +27,7 @@ class PilhaDescarte:
             raise ValueError('A pilha de descarte está vazia.')
         return self._cartas.pop()
     
+    def adicionar_carta(self, carta: Carta):
+        '''Adiciona uma carta ao topo da pilha de descarte.'''
+        self._cartas.append(carta)
+    
