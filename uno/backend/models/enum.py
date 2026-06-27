@@ -26,3 +26,9 @@ class EstadoJogador(Enum):
     ATIVO = "ativo"
     DESISTIU = "desistiu"
     VENCEU = "venceu"
+
+class EstadoRealiEhGay(Enum):
+    NORMAL         = "normal"          # situação padrão
+    PODE_DECLARAR  = "pode_declarar"   # jogou e ficou com 1 carta
+    DECLAROU       = "declarou"        # declarou corretamente
+    PERDEU_CHANCE  = "perdeu_chance"   # não declarou a tempo

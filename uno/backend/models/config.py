@@ -17,4 +17,4 @@ QTD_CARTA_PRETA : int = 4
 QTD_COMPRA_PADRAO: int = 1       # cartas compradas ao passar a vez
 QTD_COMPRA_MAIS_DOIS: int = 2    # cartas compradas por +2
 QTD_COMPRA_MAIS_QUATRO: int = 4  # cartas compradas por +4 (coringa)
-UNO_PENALIDADE: int = 2          # cartas compradas se não gritar REALI EH GAY
+QTD_PUNICAO_REALIEHGAY: int = 2          # cartas compradas se não gritar REALI EH GAY
