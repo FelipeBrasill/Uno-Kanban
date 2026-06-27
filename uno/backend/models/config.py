@@ -3,7 +3,10 @@
 MAO_INICIAL: int = 7
 EMBARALHAR_PADRAO: int = 7
 MIN_JOGADORES: int = 2
-MAX_JOGADORES: int = 10
+MAX_JOGADORES: int = 20
+NUMERO_MAXIMO_CARTAS: int = 108
+NUMERO_MINIMO_CARTAS: int = 0
+BASE_NUMERICA_JOGO : int = 10
 
 # --- BARALHO ---
 QTD_CARTA_ZERO: int = 1      # 0 aparece 1x por cor

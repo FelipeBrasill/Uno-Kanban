@@ -20,7 +20,13 @@ class Jogador:
     def passar_vez(self) -> None:
         '''Permite que o jogador passe a vez.'''
 
-    def jogar_carta(self, carta: Carta) -> None:
+    def jogar_carta(self, carta: Carta) -> Carta:
         '''Permite que o jogador jogue uma carta da sua mão.'''
+        # jogador seleciona uma carta da mão 
         self._mao.remover_carta(carta)
+        # carta é adicionada na pilha
+        self.adicionar_carta(carta)
+        return carta
+    
+    
     

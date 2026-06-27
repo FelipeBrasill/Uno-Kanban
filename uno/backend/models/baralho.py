@@ -2,8 +2,11 @@
 from uno.backend.models.carta import Carta
 from collections import deque
 import random
-from uno.backend.models.config import EMBARALHAR_PADRAO
-
+from uno.backend.models.carta_comum import CartaComum
+from uno.backend.models.carta_comum import CartaComum
+from uno.backend.models.carta_acao import CartaAcao
+from uno.backend.models.config import BASE_NUMERICA_JOGO, EMBARALHAR_PADRAO
+from uno.backend.models.enum import CorCarta, TipoEfeito
 class Baralho:
     '''Classe que representa um baralho de UNO.'''
 
@@ -28,4 +31,19 @@ class Baralho:
         if not self._cartas:
             raise ValueError('O baralho está vazio.')
         return self._cartas.popleft()
+    def _popular_baralho(self) -> None:
     
+        cores_normais = [cor for cor in CorCarta if cor != CorCarta.PRETO]
+        carta_acao = [acao for acao in TipoEfeito if acao != TipoEfeito.COMPRAR_QUATRO]
+        for cor in cores_normais:
+            for valor in range(BASE_NUMERICA_JOGO):
+                for _ in range(2):
+                    self._cartas.append(CartaComum(cor.value, valor))
+            for acao in carta_acao:
+                for _ in range(2):
+                    self._cartas.append(CartaAcao(cor.value, acao.value))
+        
+        # coringas — só cor preta, sem número
+        for _ in range(QTD_CARTA_CORINGA):  # 4 coringas no UNO padrão
+            self._cartas.append(CartaAcao(CorCarta.PRETO.value, TipoEfeito.CORINGA.value))
+                
