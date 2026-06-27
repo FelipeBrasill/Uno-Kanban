@@ -3,10 +3,10 @@ from uno.backend.models.carta import Carta
 from collections import deque
 import random
 from uno.backend.models.carta_comum import CartaComum
-from uno.backend.models.carta_comum import CartaComum
 from uno.backend.models.carta_acao import CartaAcao
-from uno.backend.models.config import BASE_NUMERICA_JOGO, EMBARALHAR_PADRAO
+from uno.backend.models.config import BASE_NUMERICA_JOGO, EMBARALHAR_PADRAO, QTD_CARTA_PRETA
 from uno.backend.models.enum import CorCarta, TipoEfeito
+
 class Baralho:
     '''Classe que representa um baralho de UNO.'''
 
@@ -32,18 +32,34 @@ class Baralho:
             raise ValueError('O baralho está vazio.')
         return self._cartas.popleft()
     def _popular_baralho(self) -> None:
-    
+        '''Adiciona cartas ao baralho em tempo de execução'''
         cores_normais = [cor for cor in CorCarta if cor != CorCarta.PRETO]
-        carta_acao = [acao for acao in TipoEfeito if acao != TipoEfeito.COMPRAR_QUATRO]
+        
+        efeitos_coloridos = [
+            TipoEfeito.BLOQUEIO,
+            TipoEfeito.REVERSO,
+            TipoEfeito.COMPRA_DUAS,
+            TipoEfeito.TROCAR_MAO,
+        ]
+        
+        efeitos_pretos = [
+            TipoEfeito.TROCAR_COR,
+            TipoEfeito.COMPRA_QUATRO,
+        ]
+
+        # cartas comuns — 2 de cada número por cor
         for cor in cores_normais:
             for valor in range(BASE_NUMERICA_JOGO):
                 for _ in range(2):
                     self._cartas.append(CartaComum(cor.value, valor))
-            for acao in carta_acao:
+
+        # cartas de ação coloridas — 2 de cada efeito por cor
+        for cor in cores_normais:
+            for efeito in efeitos_coloridos:
                 for _ in range(2):
-                    self._cartas.append(CartaAcao(cor.value, acao.value))
-        
-        # coringas — só cor preta, sem número
-        for _ in range(QTD_CARTA_CORINGA):  # 4 coringas no UNO padrão
-            self._cartas.append(CartaAcao(CorCarta.PRETO.value, TipoEfeito.CORINGA.value))
-                
+                    self._cartas.append(CartaAcao(cor.value, efeito.value))
+
+        # cartas pretas — QTD_CARTA_PRETA de cada tipo
+        for efeito in efeitos_pretos:
+            for _ in range(QTD_CARTA_PRETA):
+                self._cartas.append(CartaAcao(CorCarta.PRETO.value, efeito.value))
