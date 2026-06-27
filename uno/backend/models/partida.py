@@ -20,6 +20,22 @@ class Partida:
         self._pilha_descarte: PilhaDescarte = PilhaDescarte()
         self._sentido: int = 1  # 1 = horário, -1 = anti-horário
 
+    # =========================================================
+    # PROPERTIES
+    # =========================================================
+
+    @property
+    def carta_topo(self) -> Carta:
+        return self._pilha_descarte.obter_carta_topo()
+
+    @property
+    def jogadores(self) -> list[Jogador]:
+        return list(self._jogadores)
+
+    # =========================================================
+    # SETUP
+    # =========================================================
+
     def jogador_atual(self) -> Jogador:
         return self._jogadores[0]
 
@@ -29,16 +45,6 @@ class Partida:
         self.distribuir_cartas()
         self.tirar_carta_inicial_descarte()
         self._turno = 0
-
-    def proximo_turno(self) -> None:
-        jogador = self.jogador_atual()
-
-        if jogador.estado_realiehgay == EstadoRealiEhGay.PODE_DECLARAR:
-            jogador.estado_realiehgay = EstadoRealiEhGay.NORMAL
-            self.aplicar_punicao(jogador)
-
-        self._turno += 1
-        self._jogadores.rotate(-self._sentido)
 
     def distribuir_cartas(self, mao_inicial: int = MAO_INICIAL) -> None:
         for jogador in self._jogadores:
@@ -54,40 +60,29 @@ class Partida:
         random.shuffle(lista_jogadores)
         self._jogadores = deque(lista_jogadores)
 
-    def ativar_efeito_carta_acao(self, carta: Carta) -> None:
-        """Aplica o efeito da carta de ação no estado da partida."""
-        if not isinstance(carta, CartaAcao):
-            return
+    # =========================================================
+    # TURNO
+    # =========================================================
 
-        match carta.efeito:
-            case TipoEfeito.REVERSO:
-                self._sentido *= -1
-                self.proximo_turno()
+    def _proximo_jogador(self) -> None:
+        self._jogadores.rotate(-self._sentido)
 
-            case TipoEfeito.BLOQUEIO:
-                self.proximo_turno()
-                self.proximo_turno()
+    def proximo_turno(self) -> None:
+        jogador = self.jogador_atual()
 
-            case TipoEfeito.COMPRA_DUAS:
-                proximo = self._jogadores[self._sentido]
-                proximo.comprar_carta(self._baralho, QTD_COMPRA_MAIS_DOIS)
-                self.proximo_turno()
-                self.proximo_turno()
+        if jogador.estado_realiehgay == EstadoRealiEhGay.PODE_DECLARAR:
+            jogador.estado_realiehgay = EstadoRealiEhGay.NORMAL
+            self.aplicar_punicao(jogador)
 
-            case TipoEfeito.COMPRA_QUATRO:
-                proximo = self._jogadores[self._sentido]
-                proximo.comprar_carta(self._baralho, QTD_COMPRA_MAIS_QUATRO)
-                self.proximo_turno()
-                self.proximo_turno()
+        self._turno += 1
+        self._proximo_jogador()
 
-            case TipoEfeito.TROCAR_COR:
-                pass  # tratado no serviço
-
-            case TipoEfeito.TROCAR_MAO:
-                pass  # tratado no serviço
+    # =========================================================
+    # VERIFICAÇÕES
+    # =========================================================
 
     def verificar_jogada(self, carta: Carta) -> bool:
-        topo = self._pilha_descarte.obter_carta_topo()
+        topo = self.carta_topo
 
         if carta.cor == CorCarta.PRETO:
             return True
@@ -103,19 +98,18 @@ class Partida:
 
         return False
 
-    def atualizar_estado_realiehgay(self, jogador: Jogador) -> None:
-        if jogador.quantidade_cartas_mao == 1:
-            jogador.estado_realiehgay = EstadoRealiEhGay.PODE_DECLARAR
-        else:
-            jogador.estado_realiehgay = EstadoRealiEhGay.NORMAL
-
     def pode_jogar(self) -> bool:
-        jogador = self.jogador_atual()
-
-        for carta in jogador.mao:
+        for carta in self.jogador_atual().mao:
             if self.verificar_jogada(carta):
                 return True
         return False
+
+    def verificar_vitoria(self) -> bool:
+        return self.jogador_atual().mao_vazia
+
+    # =========================================================
+    # ORQUESTRAÇÃO
+    # =========================================================
 
     def orquestrar_jogada_carta(self, carta: Carta) -> None:
         '''Organiza o pipeline da jogada de carta do jogador.'''
@@ -136,8 +130,71 @@ class Partida:
 
         self.proximo_turno()
 
-    def verificar_vitoria(self) -> bool:
-        return self.jogador_atual().mao_vazia
+    def orquestrar_compra_voluntaria(self) -> None:
+        '''Jogador não tem jogada válida — compra uma carta e verifica se pode jogar.'''
+        jogador = self.jogador_atual()
+        carta_comprada = jogador.comprar_carta(self._baralho)
+        if carta_comprada and self.verificar_jogada(carta_comprada):
+            self.orquestrar_jogada_carta(carta_comprada)
+        else:
+            self.proximo_turno()
+
+    def ativar_efeito_carta_acao(self, carta: Carta) -> None:
+        '''Aplica o efeito da carta de ação no estado da partida.'''
+        if not isinstance(carta, CartaAcao):
+            return
+
+        match carta.efeito:
+            case TipoEfeito.REVERSO:
+                self._sentido *= -1
+                self.proximo_turno()
+
+            case TipoEfeito.BLOQUEIO:
+                self._proximo_jogador()
+                self.proximo_turno()
+
+            case TipoEfeito.COMPRA_DUAS:
+                proximo = self._jogadores[self._sentido]
+                proximo.comprar_carta(self._baralho, QTD_COMPRA_MAIS_DOIS)
+                self._proximo_jogador()
+                self.proximo_turno()
+
+            case TipoEfeito.COMPRA_QUATRO:
+                proximo = self._jogadores[self._sentido]
+                proximo.comprar_carta(self._baralho, QTD_COMPRA_MAIS_QUATRO)
+                self._proximo_jogador()
+                self.proximo_turno()
+
+            case TipoEfeito.TROCAR_COR:
+                pass  # tratado no serviço
+
+            case TipoEfeito.TROCAR_MAO:
+                pass  # tratado no serviço
+
+    # =========================================================
+    # EFEITOS 
+    # =========================================================
+
+    def aplicar_escolha_cor(self, cor: CorCarta) -> None:
+        '''Aplica a cor escolhida pelo jogador após TROCAR_COR ou COMPRA_QUATRO.'''
+        self.carta_topo.cor = cor
+        self.proximo_turno()
+
+    def aplicar_troca_mao(self, alvo: Jogador) -> None:
+        '''Troca a mão do jogador atual com o alvo escolhido.'''
+        jogador = self.jogador_atual()
+        jogador._mao, alvo._mao = alvo._mao, jogador._mao
+        self.proximo_turno()
+
+    # =========================================================
+    # REALIEHGAY
+    # =========================================================
+
+    def atualizar_estado_realiehgay(self, jogador: Jogador) -> None:
+        if jogador.quantidade_cartas_mao == 1:
+            jogador.estado_realiehgay = EstadoRealiEhGay.PODE_DECLARAR
+        else:
+            jogador.estado_realiehgay = EstadoRealiEhGay.NORMAL
 
     def aplicar_punicao(self, jogador: Jogador) -> None:
         jogador.comprar_carta(self._baralho, QTD_PUNICAO_REALIEHGAY)
@@ -148,7 +205,8 @@ class Partida:
             self.aplicar_punicao(declarante)
             return False
 
-        if alvo != declarante:
+        if alvo != declarante and alvo.estado_realiehgay == EstadoRealiEhGay.PODE_DECLARAR:
+            alvo.estado_realiehgay = EstadoRealiEhGay.NORMAL
             self.aplicar_punicao(alvo)
 
         alvo.estado_realiehgay = EstadoRealiEhGay.DECLAROU
