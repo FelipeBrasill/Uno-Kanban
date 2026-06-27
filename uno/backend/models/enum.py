@@ -8,11 +8,14 @@ class CorCarta(Enum):
     AMARELO = "amarelo"
     PRETO = "preto"  # cor para cartas especiais 
 
+   
 class TipoEfeito(Enum):
-    PULAR = "pular"
-    INVERTER = "inverter"
-    COMPRAR_DOIS = "comprar_dois"
-    COMPRAR_QUATRO = "comprar_quatro"
+    BLOQUEIO = "PULAR"
+    REVERSO = "REVERSO"
+    COMPRA_DUAS = "COMPRA_DUAS"
+    COMPRA_QUATRO = "COMPRA_QUATRO"
+    TROCAR_MAO = "TROCAR_MAO"
+    TROCAR_COR = "TROCAR_COR"
 
 class EstadoPartida(Enum):
     AGUARDANDO = "aguardando"   # esperando jogadores entrarem

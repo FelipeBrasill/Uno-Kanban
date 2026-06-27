@@ -1,18 +1,19 @@
 from uno.backend.models.baralho import Baralho
 from uno.backend.models.mao import Mao
 from uno.backend.models.carta import Carta
-
+from uno.backend.models.config import QTD_COMPRA_PADRAO
 class Jogador:
     def __init__(self, nome: str):
         self.nome : str = nome
         self._mao : Mao = Mao()
         self._flag_desistiu : bool = False
 
-    def comprar_carta(self, baralho: Baralho) -> None:
+    def comprar_carta(self, baralho: Baralho, quantidade : int = QTD_COMPRA_PADRAO ) -> None:
         '''Permite que o jogador compre uma carta do baralho.'''
-        carta = baralho.retirar_carta()
-        self._mao.adicionar_carta(carta)
-    
+        for _ in range(quantidade):    
+            carta = baralho.retirar_carta()
+            self._mao.adicionar_carta(carta)
+        
     def desistir(self) -> None:
         '''Permite que o jogador desista da partida.'''
         self._flag_desistiu = True
