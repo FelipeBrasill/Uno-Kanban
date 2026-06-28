@@ -4,7 +4,10 @@ from collections import deque
 import random
 from uno.backend.models.carta_comum import CartaComum
 from uno.backend.models.carta_acao import CartaAcao
-from uno.backend.models.config import BASE_NUMERICA_JOGO, EMBARALHAR_PADRAO, QTD_CARTA_PRETA
+from uno.backend.models.config import (
+    BASE_NUMERICA_JOGO,
+    EMBARALHAR_PADRAO,
+    QTD_CARTA_PRETA)
 from uno.backend.models.enum import CorCarta, TipoEfeito
 
 class Baralho:
@@ -52,15 +55,15 @@ class Baralho:
         for cor in cores_normais:
             for valor in range(BASE_NUMERICA_JOGO):
                 for _ in range(2):
-                    self._cartas.append(CartaComum(cor.value, valor))
+                    self._cartas.append(CartaComum(cor, valor))
 
         # cartas de ação coloridas — 2 de cada efeito por cor
         for cor in cores_normais:
             for efeito in efeitos_coloridos:
                 for _ in range(2):
-                    self._cartas.append(CartaAcao(cor.value, efeito.value))
+                    self._cartas.append(CartaAcao(cor, efeito))
 
         # cartas pretas — QTD_CARTA_PRETA de cada tipo
         for efeito in efeitos_pretos:
             for _ in range(QTD_CARTA_PRETA):
-                self._cartas.append(CartaAcao(CorCarta.PRETO.value, efeito.value))
+                self._cartas.append(CartaAcao(CorCarta.PRETO, efeito))

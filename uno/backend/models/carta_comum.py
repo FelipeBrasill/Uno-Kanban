@@ -1,9 +1,10 @@
-
+from uno.backend.models.enum import CorCarta
 from uno.backend.models.carta import Carta
 
 
 class CartaComum(Carta):
-    '''Clase que representa una carta común de UNOKAnBAN.'''
-    def __init__(self, cor: str, valor: int):
+    '''Classe que representa uma carta comum de UNOKAnBAN.'''
+    def __init__(self, cor: CorCarta, valor: int):
         super().__init__(cor)
         self.valor = valor
+        
