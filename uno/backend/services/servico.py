@@ -1,8 +1,10 @@
 from uno.backend.models.partida import Partida
 from uno.backend.models.jogador import Jogador
 from uno.backend.models.carta import Carta
+from uno.backend.models.carta_acao import CartaAcao
+from uno.backend.models.carta_comum import CartaComum
 from uno.backend.models.enum import CorCarta
-
+from uno.backend.schemas.schema_saida import *
 class Servico:
     def __init__(self):
         self._partidas: dict[int, Partida] = {}
@@ -19,53 +21,73 @@ class Servico:
         if jogador != partida.jogador_atual():
             raise ValueError("Não é a vez desse jogador")
 
-    def _estado_partida(self, partida: Partida) -> dict:
+    def _estado_partida(self, partida: Partida) -> EstadoPartidaSchema:
         '''Retorna o estado atual da partida.'''
         vencedor = next(
-            (j.nome for j in partida.jogadores if j.mao_vazia),
+            (j for j in partida.jogadores if j.mao_vazia),
             None
         )
-        return {
-            "jogador_atual": partida.jogador_atual().nome,
-            "vencedor":      vencedor,
-            "carta_topo": {
-                "cor":            partida.carta_topo.cor.name,
-                "valor_ou_efeito": (
-                    getattr(partida.carta_topo, "valor", None)
-                    or getattr(partida.carta_topo, "efeito",  None)
+
+        carta = partida.carta_topo
+        if isinstance(carta, CartaAcao):
+            carta_schema = CartaAcaoSchema(
+                cor=carta.cor,
+                acao =carta.acao
+            )
+        elif isinstance(carta, CartaComum):
+            carta_schema = CartaComumSchema(
+                cor=carta.cor,
+                valor=carta.valor
+            )
+        else:
+            raise ValueError(f"Tipo de carta desconhecido: {type(carta)}")
+
+        return EstadoPartidaSchema(
+            jogador_atual=JogadorSchema(
+                nome=partida.jogador_atual().nome,
+                quantidade_cartas=partida.jogador_atual().quantidade_cartas_mao,
+                estado_realiehgay=partida.jogador_atual().estado_realiehgay,
+                estado_jogador=partida.jogador_atual().estado_jogador
+            ),
+            vencedor=JogadorSchema(
+                nome=vencedor.nome,
+                quantidade_cartas=vencedor.quantidade_cartas_mao,
+                estado_realiehgay=vencedor.estado_realiehgay,
+                estado_jogador=vencedor.estado_jogador
+            ) if vencedor else None,
+            carta_topo=carta_schema,       
+            jogadores=[
+                JogadorSchema(
+                    nome=j.nome,
+                    quantidade_cartas=j.quantidade_cartas_mao,
+                    estado_realiehgay=j.estado_realiehgay,
+                    estado_jogador=j.estado_jogador
                 )
-            },
-            "jogadores": [
-                {
-                    "nome":             j.nome,
-                    "quantidade_cartas": j.quantidade_cartas_mao
-                }
                 for j in partida.jogadores
             ]
-        }
-
-    def criar_partida(self, id_partida: int, jogadores: list[Jogador]) -> dict:
+        )
+    def criar_partida(self, id_partida: int, jogadores: list[Jogador]) -> EstadoPartidaSchema:
         '''Cria e inicia uma nova partida.'''
         partida = Partida(id_partida, jogadores)
         partida.iniciar_partida()
         self._partidas[id_partida] = partida
         return self._estado_partida(partida)
 
-    def executar_turno(self, id_partida: int, jogador: Jogador, carta: Carta) -> dict:
+    def executar_turno(self, id_partida: int, jogador: Jogador, carta: Carta) -> EstadoPartidaSchema:
         '''Executa a jogada de uma carta no turno atual.'''
         partida = self._buscar_partida(id_partida)
         self._validar_vez(partida, jogador)
         partida.orquestrar_jogada_carta(carta)
         return self._estado_partida(partida)
 
-    def comprar_carta_turno(self, id_partida: int, jogador: Jogador) -> dict:
+    def comprar_carta_turno(self, id_partida: int, jogador: Jogador) -> EstadoPartidaSchema:
         '''Executa a compra de carta quando jogador não tem jogada válida.'''
         partida = self._buscar_partida(id_partida)
         self._validar_vez(partida, jogador)
         partida.orquestrar_compra_voluntaria()
         return self._estado_partida(partida)
 
-    def escolher_cor(self, id_partida: int, jogador: Jogador, cor: CorCarta) -> dict:
+    def escolher_cor(self, id_partida: int, jogador: Jogador, cor: CorCarta) -> EstadoPartidaSchema:
         partida = self._buscar_partida(id_partida)
         self._validar_vez(partida, jogador)
         if partida.carta_topo.cor != CorCarta.PRETO:
@@ -73,15 +95,34 @@ class Servico:
         partida.aplicar_escolha_cor(cor)
         return self._estado_partida(partida)
 
-    def gritar_realiehgay(self, id_partida: int, declarante: Jogador, alvo: Jogador) -> dict:
+    def gritar_realiehgay(self, id_partida: int, declarante: Jogador, alvo: Jogador) -> EstadoPartidaSchema:
         '''Qualquer jogador declara realiehgay por qualquer outro.'''
         partida = self._buscar_partida(id_partida)
         partida.declarar_realiehgay(declarante, alvo)
         return self._estado_partida(partida)
 
-    def executar_trocar_mao(self, id_partida: int, jogador: Jogador, alvo: Jogador) -> dict:
+    def obter_mao(self, id_partida: int, jogador: Jogador) -> MaoSchema:
+        self._buscar_partida(id_partida)
+        
+        cartas : list[CartaAcaoSchema | CartaComumSchema] = []
+        for carta  in jogador.obter_mao():
+            if isinstance(carta, CartaAcao):
+                cartas.append(CartaAcaoSchema(
+                    cor =  carta.cor,
+                    acao = carta.acao
+                ))
+            elif isinstance(carta,CartaComum):
+                cartas.append(CartaComumSchema(
+                    cor   =  carta.cor,
+                    valor =  carta.valor
+                ))
+        
+        return MaoSchema(mao = cartas)
+
+    def executar_trocar_mao(self, id_partida: int, jogador: Jogador, alvo: Jogador) -> EstadoPartidaSchema:
         '''Jogador escolhe com quem trocar a mão.'''
         partida = self._buscar_partida(id_partida)
         self._validar_vez(partida, jogador)
         partida.aplicar_troca_mao(alvo)
+        partida.proximo_turno()
         return self._estado_partida(partida)

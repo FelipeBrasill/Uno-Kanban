@@ -26,6 +26,7 @@ class EstadoJogador(Enum):
     ATIVO = "ativo"
     DESISTIU = "desistiu"
     VENCEU = "venceu"
+    PERDEU = "perdeu"
 
 class EstadoRealiEhGay(Enum):
     NORMAL         = "normal"          # situação padrão

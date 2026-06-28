@@ -1,9 +1,9 @@
 from pydantic import BaseModel
-from uno.backend.models.enum import EstadoRealiEhGay, EstadoJogador
+from uno.backend.models.enum import EstadoRealiEhGay, EstadoJogador, CorCarta,TipoEfeito
 
 
 class CartaSchema(BaseModel):
-    cor: str
+    cor: CorCarta
 
 
 class CartaComumSchema(CartaSchema):
@@ -11,7 +11,7 @@ class CartaComumSchema(CartaSchema):
 
 
 class CartaAcaoSchema(CartaSchema):
-    efeito: str
+    acao : TipoEfeito
 
 
 class JogadorSchema(BaseModel):

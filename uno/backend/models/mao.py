@@ -1,4 +1,4 @@
-
+from typing import Iterator
 from uno.backend.models.carta import Carta
 
 
@@ -7,6 +7,9 @@ class Mao:
         '''Classe que representa uma mão de cartas de UNOKanban.'''
         self._cartas : list[Carta] = []
     
+    def __iter__(self) -> Iterator[Carta]:
+        return iter(self._cartas)
+
     @property
     def quantidade(self) -> int:
         '''Retorna a quantidade de cartas na mão.'''

@@ -18,7 +18,7 @@ class Partida:
         self._jogadores: deque[Jogador] = deque(jogadores)
         self._baralho: Baralho = Baralho()
         self._pilha_descarte: PilhaDescarte = PilhaDescarte()
-        self._sentido: int = 1  # 1 = horário, -1 = anti-horário
+        self._sentido: int = SENTIDO_PADRAO
 
     # =========================================================
     # PROPERTIES
@@ -91,7 +91,7 @@ class Partida:
             return True
 
         if isinstance(carta, CartaAcao) and isinstance(topo, CartaAcao):
-            return carta.efeito == topo.efeito
+            return carta.acao == topo.acao
 
         if isinstance(carta, CartaComum) and isinstance(topo, CartaComum):
             return carta.valor == topo.valor
@@ -99,7 +99,7 @@ class Partida:
         return False
 
     def pode_jogar(self) -> bool:
-        for carta in self.jogador_atual().mao:
+        for carta in self.jogador_atual().obter_mao():
             if self.verificar_jogada(carta):
                 return True
         return False
@@ -144,7 +144,7 @@ class Partida:
         if not isinstance(carta, CartaAcao):
             return
 
-        match carta.efeito:
+        match carta.acao:
             case TipoEfeito.REVERSO:
                 self._sentido *= -1
                 self.proximo_turno()
@@ -183,7 +183,8 @@ class Partida:
     def aplicar_troca_mao(self, alvo: Jogador) -> None:
         '''Troca a mão do jogador atual com o alvo escolhido.'''
         jogador = self.jogador_atual()
-        jogador._mao, alvo._mao = alvo._mao, jogador._mao
+        # Trocamos o objeto Mao inteiro entre os jogadores
+        jogador.trocar_mao_com(alvo)
         self.proximo_turno()
 
     # =========================================================
