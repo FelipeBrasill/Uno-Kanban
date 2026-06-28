@@ -13,6 +13,7 @@ class Baralho:
     def __init__(self):
         '''Inicializa um baralho vazio.'''
         self._cartas: deque[Carta] = deque()
+        self._popular_baralho()
 
     @property
     def quantidade(self) -> int:
