@@ -25,3 +25,11 @@ class PilhaDescarte:
         '''Adiciona uma carta ao topo da pilha de descarte.'''
         self._cartas.append(carta)
     
+    def reciclar_descarte(self) -> list[Carta]:
+        '''Retira todas as cartas da pilha de descarte exceto o topo'''
+        topo = self._cartas.pop()
+        cartas_antigas = list(self._cartas)
+        self._cartas.clear()
+        self._cartas.append(topo)
+        
+        return cartas_antigas

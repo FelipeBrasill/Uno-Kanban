@@ -7,7 +7,8 @@ MAX_JOGADORES: int = 20
 NUMERO_MAXIMO_CARTAS: int = 108
 NUMERO_MINIMO_CARTAS: int = 0
 BASE_NUMERICA_JOGO : int = 10
-
+SENTIDO_PADRAO = 1
+TURNO_INICIAL = 0
 # --- BARALHO ---
 QTD_CARTA_ZERO: int = 1      # 0 aparece 1x por cor
 QTD_CARTA_NUMERO: int = 2    # 1-9 aparecem 2x por cor
@@ -18,4 +19,3 @@ QTD_COMPRA_PADRAO: int = 1       # cartas compradas ao passar a vez
 QTD_COMPRA_MAIS_DOIS: int = 2    # cartas compradas por +2
 QTD_COMPRA_MAIS_QUATRO: int = 4  # cartas compradas por +4 (coringa)
 QTD_PUNICAO_REALIEHGAY: int = 2          # cartas compradas se não gritar REALI EH GAY
-SENTIDO_PADRAO = 1

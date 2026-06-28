@@ -14,7 +14,7 @@ class Partida:
 
     def __init__(self, id_partida: int, jogadores: list[Jogador]):
         self._id_partida: int = id_partida
-        self._turno: int = 0
+        self._turno: int = TURNO_INICIAL
         self._jogadores: deque[Jogador] = deque(jogadores)
         self._baralho: Baralho = Baralho()
         self._pilha_descarte: PilhaDescarte = PilhaDescarte()
@@ -25,7 +25,7 @@ class Partida:
     # =========================================================
 
     @property
-    def carta_topo(self) -> Carta:
+    def carta_topo_descarte(self) -> Carta:
         return self._pilha_descarte.obter_carta_topo()
 
     @property
@@ -44,7 +44,6 @@ class Partida:
         self.sortear_ordem_jogadores()
         self.distribuir_cartas()
         self.tirar_carta_inicial_descarte()
-        self._turno = 0
 
     def distribuir_cartas(self, mao_inicial: int = MAO_INICIAL) -> None:
         for jogador in self._jogadores:
@@ -82,7 +81,7 @@ class Partida:
     # =========================================================
 
     def verificar_jogada(self, carta: Carta) -> bool:
-        topo = self.carta_topo
+        topo = self.carta_topo_descarte
 
         if carta.cor == CorCarta.PRETO:
             return True
@@ -105,6 +104,7 @@ class Partida:
         return False
 
     def verificar_vitoria(self) -> bool:
+        '''retorna flag de vitoria de jogador'''
         return self.jogador_atual().mao_vazia
 
     # =========================================================
@@ -113,6 +113,10 @@ class Partida:
 
     def orquestrar_jogada_carta(self, carta: Carta) -> None:
         '''Organiza o pipeline da jogada de carta do jogador.'''
+        
+        if self.partida_encerrou():
+            raise ValueError("Ação invalida: A partida já encerrou")
+        
         if not self.verificar_jogada(carta):
             raise ValueError("Jogada inválida")
 
@@ -131,8 +135,10 @@ class Partida:
         self.proximo_turno()
 
     def orquestrar_compra_voluntaria(self) -> None:
-        '''Jogador não tem jogada válida — compra uma carta e verifica se pode jogar.'''
+        '''Jogador não tem jogada válida -> compra uma carta e verifica se pode jogar.'''
         jogador = self.jogador_atual()
+        if self._baralho.esta_vazio():
+            self._garantir_cartas_no_baralho()
         carta_comprada = jogador.comprar_carta(self._baralho)
         if carta_comprada and self.verificar_jogada(carta_comprada):
             self.orquestrar_jogada_carta(carta_comprada)
@@ -155,13 +161,28 @@ class Partida:
 
             case TipoEfeito.COMPRA_DUAS:
                 proximo = self._jogadores[self._sentido]
-                proximo.comprar_carta(self._baralho, QTD_COMPRA_MAIS_DOIS)
+
+                if self._baralho.quantidade < QTD_COMPRA_MAIS_DOIS:
+                    qtd_faltante : int = QTD_COMPRA_MAIS_DOIS - self._baralho.quantidade
+                    proximo.comprar_carta(self._baralho, self._baralho.quantidade)
+                    self._baralho.reabastecer_baralho
+                    proximo.comprar_carta(self._baralho,qtd_faltante)
+                else:    
+                    proximo.comprar_carta(self._baralho, QTD_COMPRA_MAIS_DOIS)
                 self._proximo_jogador()
                 self.proximo_turno()
 
-            case TipoEfeito.COMPRA_QUATRO:
+            case TipoEfeito.COMPRA_QUATRO:                
                 proximo = self._jogadores[self._sentido]
-                proximo.comprar_carta(self._baralho, QTD_COMPRA_MAIS_QUATRO)
+
+                if self._baralho.quantidade < QTD_COMPRA_MAIS_QUATRO:
+                    qtd_faltante : int = QTD_COMPRA_MAIS_DOIS - self._baralho.quantidade
+                    proximo.comprar_carta(self._baralho, self._baralho.quantidade)
+                    self._baralho.reabastecer_baralho
+                    proximo.comprar_carta(self._baralho,qtd_faltante)
+                else:    
+                    proximo.comprar_carta(self._baralho, QTD_COMPRA_MAIS_QUATRO)
+                
                 self._proximo_jogador()
                 self.proximo_turno()
 
@@ -177,13 +198,12 @@ class Partida:
 
     def aplicar_escolha_cor(self, cor: CorCarta) -> None:
         '''Aplica a cor escolhida pelo jogador após TROCAR_COR ou COMPRA_QUATRO.'''
-        self.carta_topo.cor = cor
+        self.carta_topo_descarte.cor = cor
         self.proximo_turno()
 
     def aplicar_troca_mao(self, alvo: Jogador) -> None:
         '''Troca a mão do jogador atual com o alvo escolhido.'''
         jogador = self.jogador_atual()
-        # Trocamos o objeto Mao inteiro entre os jogadores
         jogador.trocar_mao_com(alvo)
         self.proximo_turno()
 
@@ -206,9 +226,19 @@ class Partida:
             self.aplicar_punicao(declarante)
             return False
 
-        if alvo != declarante and alvo.estado_realiehgay == EstadoRealiEhGay.PODE_DECLARAR:
+        if alvo != declarante:
             alvo.estado_realiehgay = EstadoRealiEhGay.NORMAL
             self.aplicar_punicao(alvo)
 
         alvo.estado_realiehgay = EstadoRealiEhGay.DECLAROU
         return True
+    
+    def partida_encerrou(self) -> bool:
+        '''Indica se a partida já chegou ao fim (regrade domínio).'''
+        return any(j.mao_vazia for j in self.jogadores)
+    
+    def _garantir_cartas_no_baralho(self) -> None:
+        '''Reabastece o baralho caso esteja vazio'''
+        if self._baralho.esta_vazio():
+            sobras = self._pilha_descarte.reciclar_descarte()
+            self._baralho.reabastecer_baralho(sobras)

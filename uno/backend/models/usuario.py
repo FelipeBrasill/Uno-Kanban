@@ -4,5 +4,6 @@ class Usuario:
         self.nome = nome
         self.email = email
         self.senha_hash = senha_hash  
-        self.pontuacao_total = 0     
+        self.quantidade_vitorias = 0
+        self.realiehgay_falados =  0     
         
