@@ -1,11 +1,14 @@
-import { Link } from 'react-router'
+import { Outlet, useLocation } from 'react-router'
+import Banner from './components/Banner'
 
 function App() {
+  const location = useLocation()
+  const esconderBanner = location.pathname === '/'
+
   return (
     <div>
-      <nav>
-        <Link to="/">Início</Link> | <Link to="/sobre">Sobre</Link>
-      </nav>
+      { !esconderBanner && <Banner /> }
+      <Outlet />
     </div>
   )
 }
