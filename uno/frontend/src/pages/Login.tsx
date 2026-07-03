@@ -1,4 +1,4 @@
-import BgImage from '../assets/bg_login.png'
+import BgImage from '../assets/bg/bg_login.png'
 import Button from '../components/Button'
 
 import { useNavigate } from 'react-router'
