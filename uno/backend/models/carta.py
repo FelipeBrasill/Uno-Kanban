@@ -1,7 +1,11 @@
 from abc import ABC
 from uno.backend.models.enum import CorCarta
+from abc import ABC
+from uuid import uuid4, UUID
+
 class Carta(ABC):
-    '''Clase abstrata que representa una carta de UNOKAnBAN.'''
-    def __init__(self, cor : CorCarta):
-        self.cor : CorCarta = cor
+    '''Classe abstrata que representa uma carta de UNOKAnBAN.'''
+    def __init__(self, cor: CorCarta):
+        self.cor: CorCarta = cor
+        self.id: UUID = uuid4()
 
