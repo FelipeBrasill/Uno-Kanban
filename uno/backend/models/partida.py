@@ -1,13 +1,13 @@
-from uno.backend.models.carta_acao import CartaAcao
-from uno.backend.models.carta_comum import CartaComum
-from uno.backend.models.jogador import Jogador
+from .carta_acao import CartaAcao
+from .carta_comum import CartaComum
+from .jogador import Jogador
 from collections import deque
-from uno.backend.models.baralho import Baralho
+from .baralho import Baralho
 import random
-from uno.backend.models.pilha_descarte import PilhaDescarte
-from uno.backend.models.config import *
-from uno.backend.models.enum import TipoEfeito, CorCarta, EstadoRealiEhGay
-from uno.backend.models.carta import Carta
+from .pilha_descarte import PilhaDescarte
+from .config import *
+from .enum import TipoEfeito, CorCarta, EstadoRealiEhGay
+from .carta import Carta
 
 class Partida:
     '''Classe que representa uma partida de UNO.'''

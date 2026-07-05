@@ -1,5 +1,5 @@
-from uno.backend.models.enum import CorCarta, TipoEfeito
-from uno.backend.models.carta import Carta
+from .enum import CorCarta, TipoEfeito
+from .carta import Carta
 
 
 class CartaAcao(Carta):

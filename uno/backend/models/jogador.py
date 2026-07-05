@@ -1,8 +1,8 @@
-from uno.backend.models.baralho import Baralho
-from uno.backend.models.mao import Mao
-from uno.backend.models.carta import Carta
-from uno.backend.models.config import QTD_COMPRA_PADRAO
-from uno.backend.models.enum import EstadoRealiEhGay, EstadoJogador
+from .baralho import Baralho
+from .mao import Mao
+from .carta import Carta
+from .config import QTD_COMPRA_PADRAO
+from .enum import EstadoRealiEhGay, EstadoJogador
 class Jogador:
     def __init__(self, nome: str):
         self.nome: str = nome

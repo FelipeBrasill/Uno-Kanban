@@ -1,5 +1,5 @@
 from typing import Iterator
-from uno.backend.models.carta import Carta
+from .carta import Carta
 
 
 class Mao:

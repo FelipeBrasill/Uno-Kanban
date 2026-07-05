@@ -1,4 +1,4 @@
-from uno.backend.models.carta import Carta
+from .carta import Carta
 from collections import deque
 
 

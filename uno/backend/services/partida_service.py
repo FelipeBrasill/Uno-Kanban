@@ -1,10 +1,10 @@
-from uno.backend.models.partida import Partida
-from uno.backend.models.jogador import Jogador
-from uno.backend.models.carta import Carta
-from uno.backend.models.carta_acao import CartaAcao
-from uno.backend.models.carta_comum import CartaComum
-from uno.backend.models.enum import CorCarta
-from uno.backend.schemas.schema_saida import *
+from ..models.partida import Partida
+from ..models.jogador import Jogador
+from ..models.carta import Carta
+from ..models.carta_acao import CartaAcao
+from ..models.carta_comum import CartaComum
+from ..models.enum import CorCarta
+from ..schemas.schema_saida import *
 class PartidaServico:
     def __init__(self):
         self._partidas: dict[int, Partida] = {}

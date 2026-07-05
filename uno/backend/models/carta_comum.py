@@ -1,5 +1,5 @@
-from uno.backend.models.enum import CorCarta
-from uno.backend.models.carta import Carta
+from .enum import CorCarta
+from .carta import Carta
 
 
 class CartaComum(Carta):
