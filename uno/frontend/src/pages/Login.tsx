@@ -21,9 +21,9 @@ function Login() {
       />
 
       {/* Conteúdo central */}
-      <div className="relative z-10 flex flex-col items-center text-center px-4 ">
+      <div className="relative z-10 flex flex-col items-center text-center pd-4 ">
         <h1 className="text-black text-6xl md:text-9xl font-bold mb-2">
-          KANBUNO
+          KUBUNO
         </h1>
         <p className="text-black/80 text-base md:text-lg mb-8">
           O verdadeiro jogo de cartas do Kanban!

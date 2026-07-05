@@ -4,65 +4,60 @@ import Reali from '../assets/players/realiehgay.jpeg'
 import McLovin from '../assets/players/mclovin.jpeg'
 
 import { Carta, CartaVirada } from '../components/Carta'
-
-function ConteinerPlayer({ playerImage, playerName, Orientation }: { playerImage: string, playerName: string, Orientation: "left" | "right" | "top" | "bottom" }) {
-
-    let align = Orientation in ["left", "top"] ? "justify-start" : "justify-end"
-    let flexDirection = Orientation in ["left", "right"] ? "flex-row" : "flex-col"
-    
-    if (Orientation === "right" || Orientation === "bottom") {
-        return (
-            <div className={`flex ${flexDirection} items-center ${align} gap-4 rounded-lg p-4`}>
-                <div className="flex flex-col items-center justify-center gap-4 rounded-lg p-4">
-                    <img src={playerImage} alt={playerName} className="w-16 h-16 rounded-full object-cover" />
-                    <h1 className="text-xl font-bold">{playerName}</h1>
-                </div>
-                <div className="flex flex-row bg-purple-500 gap-4 rounded-lg p-4">
-                    <h1 className="text-xl font-bold">0</h1>
-                </div>
-            </div>
-        )
-    }
-
-    return (
-        <div className={`flex ${flexDirection} items-center ${align} gap-4 rounded-lg p-4`}>
-            <div className="flex flex-row bg-purple-500 gap-4 rounded-lg p-4">
-                <h1 className="text-xl font-bold">0</h1>
-            </div>
-            <div className="flex flex-col items-center justify-center gap-4 rounded-lg p-4">
-                <img src={playerImage} alt={playerName} className="w-16 h-16 rounded-full object-cover" />
-                <h1 className="text-xl font-bold">{playerName}</h1>
-            </div>
-        </div>
-    )
-}
+import ContainerPlayer from '../components/ContainerPlayer'
+import MaoPlayer from '../components/MaoPlayer'
 
 function Partida() {
   return (
     <div className="flex flex-col items-center justify-center flex-1 bg-gray-100">
-      <div className="flex flex-col w-[90vw] h-[85vh] gap-2 rounded-lg p-8 items-center justify-center">
-        {/* Benyo */}
-        <div className="flex flex-col items-center justify-start h-2/5rounded-lg p-4 gap-2">
-            <ConteinerPlayer playerImage={Benyo} playerName="Benyo" Orientation="top" />
-            <CartaVirada rotate={180} />
+      <div className="flex flex-col w-[90vw] h-[87vh] gap-2 rounded-lg p-8 items-center justify-between">
+        <div className="flex flex-row items-center justify-between w-full h-2/5 rounded-lg p-0">
+            {/* Comprar carta */}
+            <div className="flex flex-col items-center justify-start h-full w-1/3 rounded-lg p-0 cursor-pointer"
+                onClick={()=>{alert("Carta Comprada")}}
+            >
+                <span className="text-2xl font-bold">Comprar Carta</span>
+                <CartaVirada />
+            </div>    
+            
+            {/* Benyo */}
+            <div className="flex flex-col items-center justify-start h-full w-1/3 rounded-lg p-0">
+                <ContainerPlayer playerImage={Benyo} playerName="Benyo" Orientation="top" />
+                <MaoPlayer rotation={180}>
+                    <CartaVirada />
+                </MaoPlayer>
+            </div>
+            
+            
+            <div className="w-1/3"></div>
         </div>
         <div className="flex flex-row items-center justify-between h-1/5 w-2/3 rounded-lg p-4">
+            
             {/* Calvo */}
             <div className="flex flex-row items-center justify-start gap-2">
-                <ConteinerPlayer playerImage={Calvo} playerName="Calvo" Orientation="left" />
-                <CartaVirada rotate={450} />
+                <ContainerPlayer playerImage={Calvo} playerName="Calvo" Orientation="left" />
+                <MaoPlayer rotation={90}>
+                    <CartaVirada />
+                </MaoPlayer>
             </div>
-            <Carta rotate={315} />
+
+            {/* Carta Central */}
+            
+            <Carta rotate={45} />
             {/* McLovin */}
             <div className="flex flex-row items-center justify-end gap-2">
-                <CartaVirada rotate={270} />
-                <ConteinerPlayer playerImage={McLovin} playerName="McLovin" Orientation="right" />
+                <MaoPlayer rotation={270}>
+                    <CartaVirada />
+                </MaoPlayer>
+                <ContainerPlayer playerImage={McLovin} playerName="McLovin" Orientation="right" />
             </div>
         </div>
         {/* Reali */}
-        <div className="flex flex-col items-center justify-end h-2/5 rounded-lg p-4 gap-2">
-            <CartaVirada />
-            <ConteinerPlayer playerImage={Reali} playerName="O Gay" Orientation="bottom" />
+        <div className="flex flex-col items-center justify-end h-2/5 rounded-lg p-0 gap-2">
+            <MaoPlayer rotation={0}>
+                    <Carta valor='+40' />
+                </MaoPlayer>
+            <ContainerPlayer playerImage={Reali} playerName="O Gay" Orientation="bottom" />
         </div>
       </div>
     </div>

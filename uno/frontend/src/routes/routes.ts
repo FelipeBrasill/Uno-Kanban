@@ -1,8 +1,8 @@
 const routes_name = {
-    home: 'home',
-    regras: 'regras',
-    login: 'login',
-    partida: 'partida',
+    "login" : "/",
+    "home" : "/home",
+    "partida" : "/partida",
+    "regras" : "/regras"
 }
 
 export default routes_name

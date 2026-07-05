@@ -3,7 +3,7 @@ import Banner from './components/Banner'
 
 function App() {
   const location = useLocation()
-  const esconderBanner = location.pathname === '/login'
+  const esconderBanner = location.pathname === '/'
 
   return (
     <div className="flex flex-col min-h-screen">

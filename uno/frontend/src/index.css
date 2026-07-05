@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+* {
+  margin: 2;
+}
+
 @theme {
   --color-primary: #d644c0
 }
