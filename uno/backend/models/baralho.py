@@ -1,14 +1,14 @@
 '''O arquivo `baralho.py` contém a classe `Baralho`, que representa um baralho de cartas do jogo UNO.'''
-from models.carta import Carta
+from .carta import Carta
 from collections import deque
 import random
-from models.carta_comum import CartaComum
-from models.carta_acao import CartaAcao
-from models.config import (
+from .carta_comum import CartaComum
+from .carta_acao import CartaAcao
+from .config import (
     BASE_NUMERICA_JOGO,
     EMBARALHAR_PADRAO,
     QTD_CARTA_PRETA)
-from models.enum import CorCarta, TipoEfeito
+from .enum import CorCarta, TipoEfeito
 
 class Baralho:
     '''Classe que representa um baralho de UNO.'''
