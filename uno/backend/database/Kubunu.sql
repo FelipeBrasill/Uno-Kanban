@@ -21,7 +21,7 @@ COMMENT ON COLUMN Usuario.Id_Conquistas IS 'Referencia a conquista de destaque a
 
 CREATE TABLE Partida 
 ( 
- Id_Partida NUMBER(5),  
+ Id_Partida NUMBER,  
  Data_Inicio_Partida DATE,  
  Data_FIm_Partida DATE,  
  Status_Partida JSON,
@@ -103,8 +103,8 @@ COMMENT ON COLUMN Conquistas.Descricao_Conquistas IS 'Descricao detalhada da con
 
 CREATE TABLE Usuario_Tem_Conquistas (
 
- Id_Usuario NUMBER(7),
- Id_Conquistas NUMBER(2),
+ Id_Usuario NUMBER,
+ Id_Conquistas NUMBER,
  CONSTRAINT Pk_Utc PRIMARY KEY (Id_Usuario, Id_Conquistas)  
 );
 
@@ -115,7 +115,7 @@ COMMENT ON COLUMN Usuario_Tem_Conquistas.Id_Conquistas IS 'Referencia a conquist
 
 CREATE TABLE Item 
 ( 
- Id_Item NUMBER(3),  
+ Id_Item NUMBER,  
  Nome_Item VARCHAR(20) NOT NULL,  
  Descricao_Item VARCHAR(200),
  CONSTRAINT Pk_Item PRIMARY KEY (Id_Item)
@@ -129,8 +129,8 @@ COMMENT ON COLUMN Item.Descricao_Item IS 'Descricao detalhada do item.';
 
 CREATE TABLE Usuario_Tem_Item 
 ( 
- Id_Usuario NUMBER(7),  
- Id_Item NUMBER(3),  
+ Id_Usuario NUMBER,  
+ Id_Item NUMBER,  
  Quantidade_Uti NUMBER(2) NOT NULL,
  CONSTRAINT Pk_Uti PRIMARY KEY (Id_Usuario, Id_Item)
 ); 
