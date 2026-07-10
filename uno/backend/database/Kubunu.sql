@@ -69,14 +69,14 @@ COMMENT ON COLUMN Estado_da_Partida.Estado_Partida_Edp IS 'Estado da partida em 
 
 CREATE TABLE HistoricoJogada 
 ( 
- Id_Hj NUMBER,  
- Tipo_Acao_Hj VARCHAR(20),  
- Carta_jogada_Hj VARCHAR(20),  
- Data_hora_Hj DATETIME,  
- Turno_Hj NUMBER(10) NOT NULL DEFAULT 0,  
- Id_Pdp NUMBER(4),
- CONSTRAINT Pk_Hj PRIMARY KEY (Id_Hj)
-); 
+ id_hj NUMBER,  
+ tipo_acao_hj VARCHAR2(20),  
+ carta_jogada_hj VARCHAR2(20),  
+ data_hora_hj TIMESTAMP,  
+ turno_hj NUMBER(10) DEFAULT 0 NOT NULL, 
+ id_pdp NUMBER,
+ CONSTRAINT pk_hj PRIMARY KEY (id_hj)
+);
 
 COMMENT ON TABLE HistoricoJogada IS 'Registra o historico de jogadas realizadas por cada participante durante as partidas.';
 COMMENT ON COLUMN HistoricoJogada.Id_Hj IS 'Identificador unico da jogada (chave primaria).';
@@ -90,7 +90,7 @@ COMMENT ON COLUMN HistoricoJogada.Id_Pdp IS 'Referencia ao participante da parti
 CREATE TABLE Conquistas 
 ( 
  Id_Conquistas NUMBER,  
- Nome_Conquistas VARCHAR(20),  
+ Nome_Conquistas VARCHAR(50),  
  Descricao_Conquistas VARCHAR(200),  
  CONSTRAINT Pk_Conquistas PRIMARY KEY (Id_Conquistas)
 ); 
@@ -220,29 +220,29 @@ INSERT INTO Item (Id_Item, Nome_Item, Descricao_Item) VALUES
 
 -- 3. Tabela Usuario
 INSERT INTO Usuario (Id_Usuario, Nome_Usuario, Email_Usuario, Senha_Usuario, Data_Criacao_Usuario, Id_Conquistas) VALUES
-(1, 'gian', 'gian@email.com', 'senha123', '2026-01-01', 3),
-(2, 'loenardo', 'loenardo@email.com', 'senha123', '2026-01-02', 5),
-(3, 'felipe', 'felipe@email.com', 'senha123', '2026-01-03', 10),
-(4, 'realiehgay', 'realiehgay@email.com', 'senha123', '2026-01-04', 4),
-(5, 'caio', 'caio@email.com', 'senha123', '2026-01-05', 1),
-(6, 'yhann', 'yhann@email.com', 'senha123', '2026-01-06', 7),
-(7, 'johnatan', 'johnatan@email.com', 'senha123', '2026-01-07', 8),
-(8, 'claudio', 'claudio@email.com', 'senha123', '2026-01-08', 2),
-(9, 'heitor', 'heitor@email.com', 'senha123', '2026-01-09', 9),
-(10, 'abraham', 'abraham@email.com', 'senha123', '2026-01-10', 6);
+(1, 'gian', 'gian@email.com', 'senha123', TO_DATE('2026-01-01', 'YYYY-MM-DD'), 3),
+(2, 'loenardo', 'loenardo@email.com', 'senha123', TO_DATE('2026-01-02', 'YYYY-MM-DD'), 5),
+(3, 'felipe', 'felipe@email.com', 'senha123', TO_DATE('2026-01-03', 'YYYY-MM-DD'), 10),
+(4, 'realiehgay', 'realiehgay@email.com', 'senha123', TO_DATE('2026-01-04', 'YYYY-MM-DD'), 4),
+(5, 'caio', 'caio@email.com', 'senha123', TO_DATE('2026-01-05', 'YYYY-MM-DD'), 1),
+(6, 'yhann', 'yhann@email.com', 'senha123', TO_DATE('2026-01-06', 'YYYY-MM-DD'), 7),
+(7, 'johnatan', 'johnatan@email.com', 'senha123', TO_DATE('2026-01-07', 'YYYY-MM-DD'), 8),
+(8, 'claudio', 'claudio@email.com', 'senha123', TO_DATE('2026-01-08', 'YYYY-MM-DD'), 2),
+(9, 'heitor', 'heitor@email.com', 'senha123', TO_DATE('2026-01-09', 'YYYY-MM-DD'), 9),
+(10, 'abraham', 'abraham@email.com', 'senha123', TO_DATE('2026-01-10', 'YYYY-MM-DD'), 6);
 
 -- 4. Tabela Partida (Uno Status: cor, carta do topo, sentido, se acabou)
 INSERT INTO Partida (Id_Partida, Data_Inicio_Partida, Data_FIm_Partida, Status_Partida) VALUES
-(1, '2026-02-01', '2026-02-01', '{"finalizada": true}'),
-(2, '2026-02-02', '2026-02-02', '{"finalizada": true}'),
-(3, '2026-02-03', '2026-02-03', '{"finalizada": true}'),
-(4, '2026-02-04', '2026-02-04', '{"finalizada": true}'),
-(5, '2026-02-05', '2026-02-05', '{"finalizada": true}'),
-(6, '2026-02-06', NULL, '{"finalizada": false}'),
-(7, '2026-02-07', NULL, '{"finalizada": false}'),
-(8, '2026-02-08', NULL, '{"finalizada": false}'),
-(9, '2026-02-09', NULL, '{"finalizada": false}'),
-(10, '2026-02-10', NULL, '{"finalizada": false}');
+(1, TO_DATE('2026-02-01', 'YYYY-MM-DD'), TO_DATE('2026-02-01', 'YYYY-MM-DD'), '{"finalizada": true}'),
+(2, TO_DATE('2026-02-02', 'YYYY-MM-DD'), TO_DATE('2026-02-02', 'YYYY-MM-DD'), '{"finalizada": true}'),
+(3, TO_DATE('2026-02-03', 'YYYY-MM-DD'), TO_DATE('2026-02-03', 'YYYY-MM-DD'), '{"finalizada": true}'),
+(4, TO_DATE('2026-02-04', 'YYYY-MM-DD'), TO_DATE('2026-02-04', 'YYYY-MM-DD'), '{"finalizada": true}'),
+(5, TO_DATE('2026-02-05', 'YYYY-MM-DD'), TO_DATE('2026-02-05', 'YYYY-MM-DD'), '{"finalizada": true}'),
+(6, TO_DATE('2026-02-06', 'YYYY-MM-DD'), NULL, '{"finalizada": false}'),
+(7, TO_DATE('2026-02-07', 'YYYY-MM-DD'), NULL, '{"finalizada": false}'),
+(8, TO_DATE('2026-02-08', 'YYYY-MM-DD'), NULL, '{"finalizada": false}'),
+(9, TO_DATE('2026-02-09', 'YYYY-MM-DD'), NULL, '{"finalizada": false}'),
+(10, TO_DATE('2026-02-10', 'YYYY-MM-DD'), NULL, '{"finalizada": false}');
 
 -- 5. Tabela Participante_da_partida (Uno Status: numero de cartas na mao)
 INSERT INTO Participante_da_partida (Id_Pdp, Id_Partida, Id_Usuario, Status_Pdp, Flag_Vencedor_Pdp) VALUES
@@ -272,16 +272,16 @@ INSERT INTO Estado_da_Partida (Id_Edp, Id_Partida, Estado_Partida_Edp) VALUES
 
 -- 7. Tabela HistoricoJogada
 INSERT INTO HistoricoJogada (Id_Hj, Tipo_Acao_Hj, Carta_jogada_Hj, Data_hora_Hj, Turno_Hj, Id_Pdp) VALUES
-(1, 'Jogar Carta', 'Inverter Vermelho', '2026-02-01 14:00:00', 1, 1),
-(2, 'Comprar', 'Nenhuma', '2026-02-01 14:01:00', 1, 2),
-(3, 'Jogar Carta', '7 Azul', '2026-02-02 15:00:00', 3, 3),
-(4, 'Jogar Carta', '+2 Verde', '2026-02-03 16:00:00', 2, 5),
-(5, 'Comprar', 'Nenhuma', '2026-02-03 16:01:00', 2, 6),
-(6, 'Jogar Carta', 'Bloqueio Amarelo', '2026-02-04 17:00:00', 4, 7),
-(7, 'Jogar Carta', '+4', '2026-02-05 18:00:00', 5, 9),
-(8, 'Jogar Carta', '9 Azul', '2026-02-06 19:00:00', 1, 1),
-(9, 'Jogar Carta', 'Inverter Verde', '2026-02-07 20:00:00', 2, 10),
-(10, 'Jogar Carta', '0 Amarelo', '2026-02-08 21:00:00', 3, 4);
+(1, 'Jogar Carta', 'Inverter Vermelho', TO_TIMESTAMP('2026-02-01 14:00:00', 'YYYY-MM-DD HH24:MI:SS'), 1, 1),
+(2, 'Comprar', 'Nenhuma', TO_TIMESTAMP('2026-02-01 14:01:00', 'YYYY-MM-DD HH24:MI:SS'), 1, 2),
+(3, 'Jogar Carta', '7 Azul', TO_TIMESTAMP('2026-02-02 15:00:00', 'YYYY-MM-DD HH24:MI:SS'), 3, 3),
+(4, 'Jogar Carta', '+2 Verde', TO_TIMESTAMP('2026-02-03 16:00:00', 'YYYY-MM-DD HH24:MI:SS'), 2, 5),
+(5, 'Comprar', 'Nenhuma', TO_TIMESTAMP('2026-02-03 16:01:00', 'YYYY-MM-DD HH24:MI:SS'), 2, 6),
+(6, 'Jogar Carta', 'Bloqueio Amarelo', TO_TIMESTAMP('2026-02-04 17:00:00', 'YYYY-MM-DD HH24:MI:SS'), 4, 7),
+(7, 'Jogar Carta', '+4', TO_TIMESTAMP('2026-02-05 18:00:00', 'YYYY-MM-DD HH24:MI:SS'), 5, 9),
+(8, 'Jogar Carta', '9 Azul', TO_TIMESTAMP('2026-02-06 19:00:00', 'YYYY-MM-DD HH24:MI:SS'), 1, 1),
+(9, 'Jogar Carta', 'Inverter Verde', TO_TIMESTAMP('2026-02-07 20:00:00', 'YYYY-MM-DD HH24:MI:SS'), 2, 10),
+(10, 'Jogar Carta', '0 Amarelo', TO_TIMESTAMP('2026-02-08 21:00:00', 'YYYY-MM-DD HH24:MI:SS'), 3, 4);
 
 -- 8. Tabela Usuario_Tem_Conquistas
 INSERT INTO Usuario_Tem_Conquistas (Id_Usuario, Id_Conquistas) VALUES
@@ -334,3 +334,106 @@ INSERT INTO Amigo_de (Id_Usuario_1, Id_Usuario_2) VALUES
 (2, 3), -- Leonardo e Felipe
 (4, 5), -- Realiehgay e Caio
 (9, 6); -- Heitor e Yhann
+
+-- Query 1 : Conquista de jogadores
+
+SELECT 
+    u.nome_usuario,
+    u.data_criacao_usuario, 
+    COUNT(utc.id_conquistas) AS qtd_conquistas
+FROM Usuario_Tem_Conquistas utc
+LEFT JOIN usuario u 
+    ON utc.id_usuario = u.id_usuario
+LEFT JOIN conquistas c 
+    ON utc.id_conquistas = c.id_conquistas
+WHERE 
+    (u.nome_usuario LIKE '%reali%' or u.nome_usuario in ('leonardo','gian')) 
+    AND u.data_criacao_usuario BETWEEN TO_DATE('2025-01-01', 'YYYY-MM-DD') 
+                                    AND TO_DATE('2029-12-31', 'YYYY-MM-DD') or u.data_criacao_usuario is null 
+GROUP BY 
+    u.nome_usuario,
+    u.data_criacao_usuario
+HAVING 
+    COUNT(utc.id_conquistas) > 0
+ORDER BY 
+    qtd_conquistas DESC;
+
+-- Query 2: itens
+SELECT 
+    u.nome_usuario,
+    i.nome_item,
+    SUM(uti.quantidade_uti) AS total_quantidade
+FROM Usuario_Tem_Item uti
+JOIN Usuario u 
+    ON uti.id_usuario = u.id_usuario
+JOIN Item i 
+    ON uti.id_item = i.id_item
+WHERE 
+    i.nome_item IN ('Lata de Coca-Cola', 'Alicate de Eletrica', 'Martelo do Ban')
+    AND (u.nome_usuario LIKE '%a%' OR u.data_criacao_usuario IS NULL)
+    AND u.data_criacao_usuario BETWEEN TO_DATE('2020-01-01', 'YYYY-MM-DD') 
+                                   AND TO_DATE('2030-12-31', 'YYYY-MM-DD')
+GROUP BY 
+    u.nome_usuario, 
+    i.nome_item
+ORDER BY 
+    total_quantidade DESC;
+-- Query 3: jogadas
+SELECT
+    u.nome_usuario,
+    hj.carta_jogada_hj,
+    COUNT(hj.id_hj) AS qtd_vezes_jogada
+FROM HistoricoJogada hj
+JOIN Participante_da_partida pdp 
+    ON hj.id_pdp = pdp.id_pdp
+JOIN Usuario u 
+    ON pdp.id_usuario = u.id_usuario
+WHERE 
+    (hj.carta_jogada_hj LIKE '%Azul%' OR u.nome_usuario IN ('gian', 'leonardo', 'felipe'))
+    AND (hj.data_hora_hj BETWEEN TO_DATE('2026-01-01', 'YYYY-MM-DD') 
+                             AND TO_DATE('2026-12-31', 'YYYY-MM-DD') 
+         OR u.data_criacao_usuario IS NULL)
+GROUP BY 
+    u.nome_usuario, 
+    hj.carta_jogada_hj
+ORDER BY 
+    qtd_vezes_jogada DESC;
+-- Query 4: partidas
+SELECT
+    p.id_partida,
+    edp.estado_partida_edp,
+    COUNT(p.id_partida) AS qtd_registros_estado
+FROM Partida p
+JOIN Estado_da_Partida edp 
+    ON p.id_partida = edp.id_partida
+WHERE 
+    p.data_inicio_partida BETWEEN TO_DATE('2026-01-01', 'YYYY-MM-DD') 
+                              AND TO_DATE('2026-12-31', 'YYYY-MM-DD')
+    AND (edp.estado_partida_edp LIKE '%Finalizado%' OR p.data_fim_partida IS NULL)
+    AND p.id_partida IN (1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+GROUP BY 
+    p.id_partida, 
+    edp.estado_partida_edp
+ORDER BY 
+    p.id_partida;
+-- Query 5: quantidade de participantes por partida em andamento
+
+SELECT
+    p.id_partida,
+    p.data_inicio_partida,
+    COUNT(pdp.id_pdp) AS qtd_participantes
+FROM Partida p
+LEFT JOIN Participante_da_partida pdp 
+    ON p.id_partida = pdp.id_partida
+LEFT JOIN Usuario u 
+    ON pdp.id_usuario = u.id_usuario
+WHERE 
+    (p.data_fim_partida IS NULL OR u.nome_usuario LIKE '%a%')
+    AND p.id_partida IN (1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+    AND p.data_inicio_partida BETWEEN TO_DATE('2025-01-01', 'YYYY-MM-DD') 
+                                  AND TO_DATE('2026-12-31', 'YYYY-MM-DD')
+GROUP BY 
+    p.id_partida, 
+    p.data_inicio_partida
+ORDER BY 
+    qtd_participantes DESC;
