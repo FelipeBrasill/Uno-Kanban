@@ -14,6 +14,7 @@ class Baralho:
     '''Classe que representa um baralho de UNO.'''
 
     def __init__(self):
+        super().__init__()
         '''Inicializa um baralho vazio.'''
         self._cartas: deque[Carta] = deque()
         self._popular_baralho()

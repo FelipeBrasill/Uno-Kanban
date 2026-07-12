@@ -2,17 +2,17 @@ from pydantic import BaseModel
 from ..models.enum import EstadoRealiEhGay, EstadoJogador, CorCarta,TipoEfeito
 
 
-class CartaSchema(BaseModel):
-    cor: CorCarta
+from uuid import UUID
 
+class CartaSchema(BaseModel):
+    id: UUID
+    cor: CorCarta
 
 class CartaComumSchema(CartaSchema):
     valor: int
 
-
 class CartaAcaoSchema(CartaSchema):
-    acao : TipoEfeito
-
+    acao: TipoEfeito
 
 class JogadorSchema(BaseModel):
     nome:              str
@@ -30,3 +30,4 @@ class EstadoPartidaSchema(BaseModel):
     vencedor:      JogadorSchema | None = None
     carta_topo:    CartaComumSchema | CartaAcaoSchema
     jogadores:     list[JogadorSchema]
+
