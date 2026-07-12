@@ -68,7 +68,6 @@ class Partida:
 
     def proximo_turno(self) -> None:
         jogador = self.jogador_atual()
-
         if jogador.estado_realiehgay == EstadoRealiEhGay.PODE_DECLARAR:
             jogador.estado_realiehgay = EstadoRealiEhGay.NORMAL
             self.aplicar_punicao(jogador)
