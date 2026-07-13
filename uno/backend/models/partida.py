@@ -67,10 +67,6 @@ class Partida:
         self._jogadores.rotate(-self._sentido)
 
     def proximo_turno(self) -> None:
-        jogador = self.jogador_atual()
-        if jogador.estado_realiehgay == EstadoRealiEhGay.PODE_DECLARAR:
-            jogador.estado_realiehgay = EstadoRealiEhGay.NORMAL
-            self.aplicar_punicao(jogador)
 
         self._turno += 1
         self._proximo_jogador()
@@ -136,6 +132,11 @@ class Partida:
     def orquestrar_compra_voluntaria(self) -> None:
         '''Jogador não tem jogada válida -> compra uma carta e verifica se pode jogar.'''
         jogador = self.jogador_atual()
+        
+        if jogador.estado_realiehgay == EstadoRealiEhGay.PODE_DECLARAR:
+            jogador.estado_realiehgay = EstadoRealiEhGay.NORMAL
+            self.aplicar_punicao(jogador)
+
         if self._baralho.esta_vazio():
             self._garantir_cartas_no_baralho()
         carta_comprada = jogador.comprar_carta(self._baralho)
@@ -158,32 +159,33 @@ class Partida:
                 self._proximo_jogador()
                 self.proximo_turno()
 
-            case TipoEfeito.COMPRA_DUAS:
-                proximo = self._jogadores[self._sentido]
-
-                if self._baralho.quantidade < QTD_COMPRA_MAIS_DOIS:
-                    qtd_faltante : int = QTD_COMPRA_MAIS_DOIS - self._baralho.quantidade
-                    proximo.comprar_carta(self._baralho, self._baralho.quantidade)
-                    self._baralho.reabastecer_baralho
-                    proximo.comprar_carta(self._baralho,qtd_faltante)
-                else:    
-                    proximo.comprar_carta(self._baralho, QTD_COMPRA_MAIS_DOIS)
-                self._proximo_jogador()
-                self.proximo_turno()
-
-            case TipoEfeito.COMPRA_QUATRO:                
+            case TipoEfeito.COMPRA_QUATRO:
                 proximo = self._jogadores[self._sentido]
 
                 if self._baralho.quantidade < QTD_COMPRA_MAIS_QUATRO:
-                    qtd_faltante : int = QTD_COMPRA_MAIS_DOIS - self._baralho.quantidade
-                    proximo.comprar_carta(self._baralho, self._baralho.quantidade)
-                    self._baralho.reabastecer_baralho
-                    proximo.comprar_carta(self._baralho,qtd_faltante)
-                else:    
-                    proximo.comprar_carta(self._baralho, QTD_COMPRA_MAIS_QUATRO)
-                
-                self._proximo_jogador()
-                self.proximo_turno()
+                    qtd_faltante: int = (
+                        QTD_COMPRA_MAIS_QUATRO - self._baralho.quantidade
+                    )
+
+                    proximo.comprar_carta(
+                        self._baralho,
+                        self._baralho.quantidade
+                    )
+
+                    self._baralho.reabastecer_baralho()
+
+                    proximo.comprar_carta(
+                        self._baralho,
+                        qtd_faltante
+                    )
+                else:
+                    proximo.comprar_carta(
+                        self._baralho,
+                        QTD_COMPRA_MAIS_QUATRO
+                    )
+
+                    # NÃO AVANÇA O TURNO AQUI.
+                    # A escolha de cor concluirá o efeito.
 
             case TipoEfeito.TROCAR_COR:
                 pass  # tratado no serviço
@@ -196,8 +198,14 @@ class Partida:
     # =========================================================
 
     def aplicar_escolha_cor(self, cor: CorCarta) -> None:
-        '''Aplica a cor escolhida pelo jogador após TROCAR_COR ou COMPRA_QUATRO.'''
         self.carta_topo_descarte.cor = cor
+
+        if (
+            isinstance(self.carta_topo_descarte, CartaAcao)
+            and self.carta_topo_descarte.acao == TipoEfeito.COMPRA_QUATRO
+        ):
+            self._proximo_jogador()
+
         self.proximo_turno()
 
     def aplicar_troca_mao(self, alvo: Jogador) -> None:

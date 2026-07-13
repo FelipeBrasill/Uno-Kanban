@@ -77,7 +77,7 @@ export interface EstadoPartida {
 // ---------------------------------------------------------------------------
 
 interface PywebviewApi {
-  criar_partida(idPartida: number, nomesJogadores: string[]): Promise<EstadoPartida>;
+  criar_partida(idPartida: number, nomeJogador: string, quantidadeBots: number): Promise<EstadoPartida>;
   estado_partida(idPartida: number): Promise<EstadoPartida>;
   jogar_carta(idPartida: number, nomeJogador: string, carta: Carta): Promise<EstadoPartida>;
   comprar_carta(idPartida: number, nomeJogador: string): Promise<EstadoPartida>;
@@ -161,8 +161,8 @@ async function chamar<T>(fn: (api: PywebviewApi) => Promise<T>): Promise<T> {
 // ---------------------------------------------------------------------------
 
 export const partidaApi = {
-  criarPartida(idPartida: number, nomesJogadores: string[]): Promise<EstadoPartida> {
-    return chamar((api) => api.criar_partida(idPartida, nomesJogadores));
+  criarPartida(idPartida: number, nomeJogador: string, quantidadeBots: number): Promise<EstadoPartida> {
+    return chamar((api) => api.criar_partida(idPartida, nomeJogador, quantidadeBots));
   },
 
   buscarEstado(idPartida: number): Promise<EstadoPartida> {

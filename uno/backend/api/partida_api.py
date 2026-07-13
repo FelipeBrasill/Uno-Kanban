@@ -48,12 +48,11 @@ class PartidaAPI:
     # Todos retornam dict pronto pra JSON (enums já convertidos em string).
     # ------------------------------------------------------------------
 
-    def criar_partida(self, id_partida: int, nomes_jogadores: list[str]) -> dict:
-        '''Cadastra os jogadores (se ainda não existirem) e inicia a partida.'''
-        for nome in nomes_jogadores:
-            self._garantir_jogador_cadastrado(nome)
+    def criar_partida(self, id_partida: int, nome_jogador: str, quantidade_bots: int) -> dict:
+        '''Cadastra o jogador humano (se ainda não existir) e inicia a partida com N bots.'''
+        self._garantir_jogador_cadastrado(nome_jogador)
 
-        estado = self._servico.criar_partida(id_partida, nomes_jogadores)
+        estado = self._servico.criar_partida(id_partida, nome_jogador, quantidade_bots)
         return estado.model_dump(mode="json")
 
     def estado_partida(self, id_partida: int) -> dict:

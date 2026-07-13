@@ -5,13 +5,21 @@ import routes_name from "../routes/routes"
 import { obterNomeJogador } from "../api/JogadorAtual"
 import { partidaApi, PartidaApiError } from "../api/partidaApi"
 
+// Espelha backend/models/config.py (MIN_JOGADORES / MAX_JOGADORES). Não há
+// endpoint que exponha essas constantes, então duplicamos aqui -- se o
+// grupo mudar os limites no backend, precisa lembrar de atualizar isso.
+const MIN_JOGADORES = 2
+const MAX_JOGADORES = 20
+const MIN_BOTS = MIN_JOGADORES - 1 // 1 bot, já que o humano ocupa uma vaga
+const MAX_BOTS = MAX_JOGADORES - 1
+
 function Home() {
   const navigate = useNavigate()
   type RouteChoices = keyof typeof routes_name
 
   const [nomeJogador, setNomeJogador] = useState<string | null>(null)
   const [criandoPartida, setCriandoPartida] = useState(false)
-  const [outrosNomes, setOutrosNomes] = useState<string[]>([""])
+  const [quantidadeBots, setQuantidadeBots] = useState(MIN_BOTS)
   const [erro, setErro] = useState<string | null>(null)
   const [carregando, setCarregando] = useState(false)
 
@@ -34,21 +42,13 @@ function Home() {
     }
   }
 
-  function atualizarOutroNome(indice: number, valor: string) {
-    setOutrosNomes((atual) => {
-      const copia = [...atual]
-      copia[indice] = valor
-      return copia
+  function ajustarQuantidadeBots(delta: number) {
+    setQuantidadeBots((atual) => {
+      const novo = atual + delta
+      if (novo < MIN_BOTS || novo > MAX_BOTS) return atual
+      return novo
     })
     if (erro) setErro(null)
-  }
-
-  function adicionarCampoJogador() {
-    setOutrosNomes((atual) => [...atual, ""])
-  }
-
-  function removerCampoJogador(indice: number) {
-    setOutrosNomes((atual) => atual.filter((_, i) => i !== indice))
   }
 
   async function handleCriarPartida() {
@@ -56,26 +56,13 @@ function Home() {
 
     setErro(null)
 
-    const nomesLimpos = outrosNomes.map((n) => n.trim()).filter(Boolean)
-    const todosOsNomes = [nomeJogador, ...nomesLimpos]
-
-    if (todosOsNomes.length < 2) {
-      setErro("Adicione pelo menos mais um jogador.")
-      return
-    }
-
-    if (new Set(todosOsNomes).size !== todosOsNomes.length) {
-      setErro("Os nomes dos jogadores precisam ser únicos.")
-      return
-    }
-
     // Gerado no client: a API não expõe nenhum endpoint que gere ou reserve
     // um id de partida, então criamos um aqui mesmo.
     const idPartida = Date.now()
 
     setCarregando(true)
     try {
-      const estadoInicial = await partidaApi.criarPartida(idPartida, todosOsNomes)
+      const estadoInicial = await partidaApi.criarPartida(idPartida, nomeJogador, quantidadeBots)
       // CONFIRMADO pelo AppRoutes.tsx: a rota de partida é fixa, "/partida",
       // sem parâmetro de id na URL. Por isso o idPartida vai junto no state
       // da navegação, não na URL -- a Tela Partida precisa ler
@@ -107,30 +94,27 @@ function Home() {
           <h2 className="text-xl font-bold">Nova Partida</h2>
           <p className="text-sm text-gray-600">Jogando como: {nomeJogador}</p>
 
-          {outrosNomes.map((valor, indice) => (
-            <div key={indice} className="flex gap-2 w-full">
-              <input
-                type="text"
-                value={valor}
-                onChange={(e) => atualizarOutroNome(indice, e.target.value)}
-                placeholder={`Nome do jogador ${indice + 2}`}
-                className="flex-1 px-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary"
-              />
-              {outrosNomes.length > 1 && (
-                <button
-                  onClick={() => removerCampoJogador(indice)}
-                  className="text-red-500 px-2"
-                  aria-label="Remover jogador"
-                >
-                  ×
-                </button>
-              )}
-            </div>
-          ))}
+          <p className="text-sm text-gray-600">Quantos bots vão jogar com você?</p>
 
-          <button onClick={adicionarCampoJogador} className="text-sm text-blue-600 underline">
-            + adicionar jogador
-          </button>
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => ajustarQuantidadeBots(-1)}
+              disabled={quantidadeBots <= MIN_BOTS}
+              className="w-10 h-10 rounded-full border border-gray-300 text-xl font-bold disabled:opacity-40"
+              aria-label="Diminuir quantidade de bots"
+            >
+              −
+            </button>
+            <span className="text-2xl font-bold w-8 text-center">{quantidadeBots}</span>
+            <button
+              onClick={() => ajustarQuantidadeBots(1)}
+              disabled={quantidadeBots >= MAX_BOTS}
+              className="w-10 h-10 rounded-full border border-gray-300 text-xl font-bold disabled:opacity-40"
+              aria-label="Aumentar quantidade de bots"
+            >
+              +
+            </button>
+          </div>
 
           {erro && <p className="text-red-600 text-sm">{erro}</p>}
 

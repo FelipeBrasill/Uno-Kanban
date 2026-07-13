@@ -44,7 +44,8 @@ function textoDaCarta(carta: CartaAPI): string {
 
 function CartaBase({ carta, rotate = 0, onClick, clicavel = false }: CartaProps) {
   const bgColor = carta ? CORES_FUNDO[carta.cor] : "bg-white"
-  const textColor = carta ? CORES_TEXTO[carta.cor] : "text-black"
+  const ehCoringa = carta && ehCartaAcao(carta) &&(carta.acao === "TROCAR_COR" || carta.acao === "COMPRA_QUATRO")
+  const textColor = ehCoringa ? "text-white" : (carta ? CORES_TEXTO[carta.cor] : "text-black")
   const textContent = carta ? textoDaCarta(carta) : "?"
   const ehAcao = carta ? ehCartaAcao(carta) : false
   const textSize = ehAcao ? "text-[15px]" : "text-[30px]"

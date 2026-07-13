@@ -161,28 +161,48 @@ function Partida() {
 
   async function escolherCor(cor: CorCarta) {
     if (!idPartida || !nomeJogador) return
+
     setErro(null)
+
+    // Fecha imediatamente
+    setAguardandoCor(false)
+
     try {
-      const novoEstado = await partidaApi.escolherCor(idPartida, nomeJogador, cor)
+      const novoEstado = await partidaApi.escolherCor(
+        idPartida,
+        nomeJogador,
+        cor
+      )
+
       setEstado(novoEstado)
-      setAguardandoCor(false)
     } catch (e) {
+      // Reabre caso dê erro
+      setAguardandoCor(true)
       tratarErro(e)
     }
-  }
+}
 
   async function trocarMaoCom(nomeAlvo: string) {
     if (!idPartida || !nomeJogador) return
+
     setErro(null)
+
+    setAguardandoAlvoTroca(false)
+
     try {
-      const novoEstado = await partidaApi.trocarMao(idPartida, nomeJogador, nomeAlvo)
+      const novoEstado = await partidaApi.trocarMao(
+        idPartida,
+        nomeJogador,
+        nomeAlvo
+      )
+
       setEstado(novoEstado)
-      setAguardandoAlvoTroca(false)
       await atualizarEstado()
     } catch (e) {
+      setAguardandoAlvoTroca(true)
       tratarErro(e)
     }
-  }
+}
 
   async function gritarUno(nomeAlvo: string) {
     if (!idPartida || !nomeJogador) return
@@ -267,9 +287,11 @@ function Partida() {
             </div>
           </div>
 
-          <div className="flex flex-row flex-wrap items-center justify-center gap-4 w-2/3">
+          <div className="flex flex-row flex-wrap items-center justify-center gap-4 w-1/3">
             {grupos.topo.map((jogador) => renderizarOponente(jogador, "top"))}
           </div>
+
+          <div className="w-1/3 flex justify-end text-white">Easter Egg</div>
         </div>
 
         {/* Meio: oponentes da esquerda/direita + carta central */}
