@@ -73,18 +73,13 @@ Atributos críticos como `cartas` do `Baralho`, `mao` do `Jogador` e `turno` da 
 
 ---
 
-## Tecnologias e Ferramentas
-
-*(A definir)*
----
-
 # Justificativa das Tecnologias Escolhidas
 
 A stack tecnológica foi definida priorizando **facilidade de desenvolvimento, integração entre as ferramentas, curva de aprendizado e possibilidade de evolução futura**, buscando atender ao prazo do projeto sem comprometer a qualidade da arquitetura.
 
 * **Python 3.12+:** *Felipe precisa escrever* (foi escolhido por ser uma linguagem madura, produtiva e amplamente utilizada no desenvolvimento de aplicações web e APIs.)
 
-* **FastAPI:** *Felipe precisa escrever* (foi selecionado por sua performance, suporte a tipagem, documentação automática e facilidade de integração com Python.)
+* **PyWebView:** Facilidade na integração do python com o React.
 
 * **TypeScript:** foi escolhido para o frontend por fornecer tipagem estática, reduzindo erros durante o desenvolvimento e facilitando a manutenção do código.
 
@@ -94,113 +89,9 @@ A stack tecnológica foi definida priorizando **facilidade de desenvolvimento, i
 
 * **React Router v7 (HashRouter):** será responsável pela navegação entre as telas da aplicação. A utilização do **HashRouter** garante compatibilidade com a hospedagem no GitHub Pages sem necessidade de configurações adicionais no servidor.
 
-* **Zustand:** foi escolhido para o gerenciamento do estado global por possuir uma API simples, baixo volume de código e excelente integração com React e TypeScript.
-
 * **Tailwind CSS:** foi adotado para agilizar o desenvolvimento da interface, permitindo criar layouts responsivos de forma rápida e consistente sem a necessidade de grandes arquivos CSS.
 
-* **Axios:** será utilizado como cliente HTTP por oferecer uma API simples, suporte a interceptadores e boa integração com aplicações React.
-
-* **TanStack Query:** ficará responsável pelo gerenciamento dos dados remotos, realizando cache automático, atualização de dados e controle de estados de carregamento e erro, reduzindo a necessidade de lógica manual.
-
-* **OpenAPI + Swagger UI:**, gerados automaticamente pelo FastAPI, serão utilizados para documentar a API e manter uma especificação padronizada dos endpoints.
-
-* **Orval:** será empregado para gerar automaticamente os tipos TypeScript e o cliente da API a partir da especificação OpenAPI, reduzindo código repetitivo e mantendo o frontend sincronizado com o backend.
-
-* **GitHub Pages:** foi escolhido para hospedar o frontend por ser uma solução gratuita, simples de configurar e adequada para aplicações estáticas desenvolvidas com React.
-
 Em conjunto, essas tecnologias formam uma stack moderna, amplamente utilizada pela comunidade e compatível entre si, oferecendo um bom equilíbrio entre produtividade, facilidade de manutenção e possibilidade de evolução do projeto.
-
----
-
-## Riscos Técnicos e Estratégias de Mitigação
-
-### 1. Hospedagem do Frontend (GitHub Pages)
-
-**Risco:** O GitHub Pages hospeda apenas arquivos estáticos e possui limitações quanto ao uso de rotas.
-
-**Impacto:** Utilizar o `BrowserRouter` poderia causar erros 404 ao acessar páginas diretamente.
-
-**Mitigação:** Utilizar o `HashRouter` do React Router v7, garantindo compatibilidade com o GitHub Pages sem necessidade de configurações adicionais.
-
-**Observações:** Caso o sistema evolua para uma hospedagem que suporte rotas, o `BrowserRouter` poderá ser adotado futuramente.
-
----
----
-
-### 2. Comunicação entre Frontend e Backend
-
-**Risco:** O frontend e o backend estarão hospedados em domínios diferentes.
-
-**Impacto:** Requisições podem ser bloqueadas por políticas de CORS.
-
-**Mitigação:** Configurar corretamente o middleware de CORS no FastAPI, permitindo acesso apenas aos domínios autorizados do frontend.
-
----
----
-
-### 3. Alterações na API
-
-**Risco:** Mudanças nos endpoints ou nos modelos de dados podem causar incompatibilidades com o frontend.
-
-**Impacto:** Erros de compilação ou falhas durante a execução.
-
-**Mitigação:** Utilizar o OpenAPI do FastAPI em conjunto com o Orval para regenerar automaticamente os tipos e clientes TypeScript sempre que a API for modificada.
-
----
----
-
-### 4. Crescimento do Estado Global
-
-**Risco:** Armazenar dados remotos e estado da interface no mesmo local pode dificultar a manutenção.
-
-**Impacto:** Código mais complexo e maior chance de inconsistências.
-
-**Mitigação:** Manter uma separação clara de responsabilidades:
-
-* **Zustand:** estado global da aplicação (autenticação, configurações, estado da interface).
-* **TanStack Query:** dados obtidos do servidor (salas, partidas, jogadores, ranking etc.).
-
----
----
-
-### 5. Hospedagem do Backend e Banco de Dados
-
-**Risco:** A plataforma de hospedagem ainda não foi definida.
-
-**Impacto:** Algumas plataformas possuem limitações de recursos, armazenamento ou tempo de inatividade ("sleep"), o que pode afetar a disponibilidade da aplicação.
-
-**Mitigação:** Avaliar as opções (Railway, Render, Heroku ou outras) considerando custos, disponibilidade, desempenho e suporte ao FastAPI antes da implantação definitiva.
-
----
----
-
-### 6. Evolução para Comunicação em Tempo Real
-
-**Risco:** A versão inicial utilizará apenas REST, o que pode exigir consultas periódicas para atualizar informações da partida.
-
-**Impacto:** Pequeno atraso na sincronização entre os jogadores e aumento no número de requisições ao servidor.
-
-**Mitigação:** A arquitetura foi planejada para permitir a futura adoção de WebSockets sem necessidade de substituir as tecnologias já escolhidas.
-
----
----
-
-### 7. Dependência de Ferramentas Geradas
-
-**Risco:** O código gerado pelo Orval pode ficar desatualizado em relação ao backend.
-
-**Impacto:** Inconsistências entre o frontend e a API.
-
-**Mitigação:** Sempre que houver alterações na especificação OpenAPI, regenerar os arquivos do Orval antes de iniciar novos desenvolvimentos ou gerar uma nova versão do sistema.
-
----
----
-
-### Considerações
-
-Os riscos identificados não impedem o desenvolvimento do projeto, mas representam pontos que exigem atenção durante sua evolução. As tecnologias selecionadas foram escolhidas de forma a minimizar esses riscos e permitir que a aplicação cresça de maneira organizada, com possibilidade de incorporar novas funcionalidades no futuro sem necessidade de mudanças significativas na arquitetura.
-
-
 ---
 
 ## Documentação Técnica e Estrutura
