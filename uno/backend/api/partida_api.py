@@ -5,11 +5,9 @@ espera. Nenhuma regra de jogo mora aqui -- só tradução e orquestração de
 chamadas.
 '''
 
-from ..models.jogador import Jogador
-from ..models.carta import Carta
-from ..models.carta_acao import CartaAcao
-from ..models.carta_comum import CartaComum
-from ..models.enum import CorCarta, TipoEfeito
+from uuid import UUID
+
+from ..models.enum import CorCarta
 from ..services.partida_service import PartidaServico
 
 
@@ -19,49 +17,31 @@ class PartidaAPI:
     def __init__(self):
         self._servico = PartidaServico()
 
-        # ASSUMIDO: Jogador não possui um id único, só `nome` (string).
-        # Como o frontend não guarda instâncias Python, precisamos de um
-        # jeito de "reencontrar" o Jogador certo a partir do nome que o JS
-        # manda de volta. Por isso mantemos esse mapa auxiliar aqui.
-        # Se dois jogadores tiverem o mesmo nome na mesma partida, isso
-        # quebra -- vale o grupo decidir se quer um id de fato em Jogador.
-        self._jogadores_por_partida: dict[int, dict[str, Jogador]] = {}
-
     # ------------------------------------------------------------------
     # Helpers internos (não expostos ao JS)
     # ------------------------------------------------------------------
 
-    def _obter_jogador(self, id_partida: int, nome_jogador: str) -> Jogador:
-        '''Recupera o objeto Jogador a partir do nome enviado pelo JS.'''
-        jogadores = self._jogadores_por_partida.get(id_partida)
-        if jogadores is None or nome_jogador not in jogadores:
-            raise ValueError(
-                f"Jogador '{nome_jogador}' não encontrado na partida {id_partida}"
-            )
-        return jogadores[nome_jogador]
-
-    def _carta_correspondente_na_mao(self, jogador: Jogador, carta_dict: dict) -> Carta:
+    def _garantir_jogador_cadastrado(self, nome: str) -> None:
         '''
-        Encontra, na mão real do jogador, a carta que corresponde ao dict
-        recebido do JS (ex: {"cor": "vermelho", "valor": 5} ou
-        {"cor": "preto", "acao": "COMPRA_QUATRO"}).
+        Garante que `nome` existe em PartidaServico._jogadores_cadastrados.
 
-        ASSUMIDO: Carta/CartaComum/CartaAcao não implementam __eq__, então a
-        comparação abaixo é feita atributo a atributo. O JS manda só os
-        dados da carta, não a instância exata -- e Mao.remover_carta precisa
-        do objeto certo. Se o grupo implementar __eq__ nas cartas, esse
-        método pode ser simplificado.
+        PartidaServico identifica jogadores só pelo nome (registro global,
+        não por partida). Se o nome já estiver cadastrado, `cadastrar_jogador`
+        levanta ValueError -- nesse caso só confirmamos que o jogador existe
+        de fato (reaproveitando-o) via `buscar_jogador`. Se o erro for por
+        outro motivo (ex: nome vazio), `buscar_jogador` vai falhar de novo e
+        propagamos o erro real.
         '''
-        for carta in jogador.obter_mao():
-            if carta.cor.value != carta_dict.get("cor"):
-                continue
-            if isinstance(carta, CartaComum) and "valor" in carta_dict:
-                if carta.valor == carta_dict["valor"]:
-                    return carta
-            elif isinstance(carta, CartaAcao) and "acao" in carta_dict:
-                if carta.acao.value == carta_dict["acao"]:
-                    return carta
-        raise ValueError("Carta informada não está na mão do jogador")
+        try:
+            self._servico.cadastrar_jogador(nome)
+        except ValueError:
+            self._servico.buscar_jogador(nome)
+
+    def _validar_turno(self, id_partida: int, nome_jogador: str) -> None:
+        '''Garante que quem está tentando agir é realmente o jogador da vez.'''
+        partida = self._servico.buscar_partida(id_partida)
+        if partida.jogador_atual().nome != nome_jogador:
+            raise ValueError(f"Não é a vez de '{nome_jogador}' jogar.")
 
     # ------------------------------------------------------------------
     # Métodos expostos ao frontend (window.pywebview.api.*)
@@ -69,11 +49,11 @@ class PartidaAPI:
     # ------------------------------------------------------------------
 
     def criar_partida(self, id_partida: int, nomes_jogadores: list[str]) -> dict:
-        '''Cria os jogadores a partir dos nomes e inicia a partida.'''
-        jogadores = [Jogador(nome) for nome in nomes_jogadores]
-        self._jogadores_por_partida[id_partida] = {j.nome: j for j in jogadores}
+        '''Cadastra os jogadores (se ainda não existirem) e inicia a partida.'''
+        for nome in nomes_jogadores:
+            self._garantir_jogador_cadastrado(nome)
 
-        estado = self._servico.criar_partida(id_partida, jogadores)
+        estado = self._servico.criar_partida(id_partida, nomes_jogadores)
         return estado.model_dump(mode="json")
 
     def estado_partida(self, id_partida: int) -> dict:
@@ -83,40 +63,46 @@ class PartidaAPI:
         return estado.model_dump(mode="json")
 
     def jogar_carta(self, id_partida: int, nome_jogador: str, carta: dict) -> dict:
-        '''Jogador tenta jogar uma carta da própria mão.'''
-        jogador = self._obter_jogador(id_partida, nome_jogador)
-        carta_obj = self._carta_correspondente_na_mao(jogador, carta)
-        estado = self._servico.executar_turno(id_partida, jogador, carta_obj)
+        '''
+        Jogador tenta jogar uma carta da própria mão.
+
+        `carta` vem do JS com pelo menos o campo "id" (uuid da carta, como
+        recebido em `obter_mao`) -- é isso que PartidaServico usa para achar
+        a carta na mão do jogador da vez.
+        '''
+        self._validar_turno(id_partida, nome_jogador)
+        id_carta = UUID(carta["id"])
+        estado = self._servico.executar_turno(id_partida, id_carta)
         return estado.model_dump(mode="json")
 
     def comprar_carta(self, id_partida: int, nome_jogador: str) -> dict:
         '''Jogador sem jogada válida compra uma carta.'''
-        jogador = self._obter_jogador(id_partida, nome_jogador)
-        estado = self._servico.comprar_carta_turno(id_partida, jogador)
+        self._validar_turno(id_partida, nome_jogador)
+        estado = self._servico.comprar_carta_turno(id_partida)
         return estado.model_dump(mode="json")
 
     def escolher_cor(self, id_partida: int, nome_jogador: str, cor: str) -> dict:
         '''Escolhe a nova cor após jogar carta preta (coringa).'''
-        jogador = self._obter_jogador(id_partida, nome_jogador)
-        estado = self._servico.escolher_cor(id_partida, jogador, CorCarta(cor))
+        self._validar_turno(id_partida, nome_jogador)
+        estado = self._servico.escolher_cor(id_partida, CorCarta(cor))
         return estado.model_dump(mode="json")
 
     def gritar_realiehgay(self, id_partida: int, nome_declarante: str, nome_alvo: str) -> dict:
         '''Um jogador declara "realiehgay" em nome de outro (ou de si mesmo).'''
-        declarante = self._obter_jogador(id_partida, nome_declarante)
-        alvo = self._obter_jogador(id_partida, nome_alvo)
-        estado = self._servico.gritar_realiehgay(id_partida, declarante, alvo)
+        estado = self._servico.gritar_realiehgay(id_partida, nome_declarante, nome_alvo)
         return estado.model_dump(mode="json")
 
     def obter_mao(self, id_partida: int, nome_jogador: str) -> dict:
-        '''Retorna a mão de cartas do jogador logado.'''
-        jogador = self._obter_jogador(id_partida, nome_jogador)
-        mao = self._servico.obter_mao(id_partida, jogador)
+        '''
+        Retorna a mão de cartas do jogador logado -- independente de ser a
+        vez dele ou não (o frontend faz polling disso o tempo todo pra manter
+        a própria mão sempre visível na tela).
+        '''
+        mao = self._servico.obter_mao(id_partida, nome_jogador)
         return mao.model_dump(mode="json")
 
     def trocar_mao(self, id_partida: int, nome_jogador: str, nome_alvo: str) -> dict:
         '''Aplica o efeito da carta de ação TROCAR_MAO.'''
-        jogador = self._obter_jogador(id_partida, nome_jogador)
-        alvo = self._obter_jogador(id_partida, nome_alvo)
-        estado = self._servico.executar_trocar_mao(id_partida, jogador, alvo)
+        self._validar_turno(id_partida, nome_jogador)
+        estado = self._servico.executar_trocar_mao(id_partida, nome_alvo)
         return estado.model_dump(mode="json")

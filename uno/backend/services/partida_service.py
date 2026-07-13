@@ -159,9 +159,11 @@ class PartidaServico:
         partida.declarar_realiehgay(declarante, alvo)
         return self.estado_partida(partida)
 
-    def obter_mao(self, id_partida: int) -> MaoSchema:
+    def obter_mao(self, id_partida: int, nome_jogador: str) -> MaoSchema:
         partida = self.buscar_partida(id_partida)
-        jogador = partida.jogador_atual()
+        jogador = next((j for j in partida.jogadores if j.nome == nome_jogador), None)
+        if jogador is None:
+            raise ValueError(f"Jogador '{nome_jogador}' não está na partida {id_partida}")
         return MaoSchema(mao=[self._carta_schema(carta) for carta in jogador.obter_mao()])
 
     def executar_trocar_mao(self, id_partida: int, nome_alvo: str) -> EstadoPartidaSchema:

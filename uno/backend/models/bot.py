@@ -1,6 +1,6 @@
-from uno.backend.models.carta import Carta
-from uno.backend.models.enum import CorCarta
-from uno.backend.models.jogador import Jogador
+from ..models.carta import Carta
+from ..models.enum import CorCarta
+from ..models.jogador import Jogador
 import random
 
 

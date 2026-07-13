@@ -35,11 +35,13 @@ export type EstadoRealiEhGay =
 // ---------------------------------------------------------------------------
 
 export interface CartaComum {
+  id: string; // UUID, como serializado por CartaSchema (model_dump mode="json")
   cor: CorCarta;
   valor: number;
 }
 
 export interface CartaAcao {
+  id: string; // UUID, como serializado por CartaSchema (model_dump mode="json")
   cor: CorCarta;
   acao: TipoEfeito;
 }

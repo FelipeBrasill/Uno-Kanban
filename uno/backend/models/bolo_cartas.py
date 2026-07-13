@@ -1,7 +1,7 @@
 # colecao_cartas.py
 from abc import ABC
 from collections import deque
-from uno.backend.models.carta import Carta
+from .carta import Carta
 
 class BoloCartas(ABC):
     '''Classe abstrata que representa uma coleção de cartas.'''
