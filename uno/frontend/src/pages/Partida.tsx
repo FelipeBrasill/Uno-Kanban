@@ -268,11 +268,7 @@ function Partida() {
         <div className="w-full bg-red-100 text-red-700 text-center py-1 text-sm">{erro}</div>
       )}
 
-      {estado.vencedor && (
-        <div className="w-full bg-yellow-300 text-center py-2 font-bold">
-          {estado.vencedor.nome} venceu a partida!
-        </div>
-      )}
+      {/* A div de vencedor antiga foi removida – agora usamos um pop-up abaixo */}
 
       <div className="flex flex-col w-[90vw] h-[87vh] gap-2 rounded-lg p-8 items-center justify-between">
         {/* Topo: comprar carta + oponentes do grupo "topo" */}
@@ -364,6 +360,27 @@ function Partida() {
                 </button>
               ))}
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* ============================================================
+          POP-UP DE VITÓRIA – DESTAQUE PARA ADICIONAR A ROTA MANUALMENTE
+          ============================================================ */}
+      {estado.vencedor && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-8 flex flex-col items-center gap-4 shadow-xl max-w-sm w-full">
+            <p className="text-2xl font-bold text-center">
+              {estado.vencedor.nome} Venceu!
+            </p>
+            <button
+              onClick={() => {
+                navigate(routes_name.home)
+              }}
+              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold"
+            >
+              Voltar
+            </button>
           </div>
         </div>
       )}
