@@ -11,6 +11,7 @@ Este projeto acadêmico é desenvolvido na Universidade Federal do Pará (UFPA) 
 - **Equipe:**
   - **Felipe Lisboa Brasil** – [FelipeBrasill](https://github.com/FelipeBrasill)
   - **Alessandro Reali Lopes Silva** – [reali-705](https://github.com/reali-705)
+  - **Gian Victor Gonçalves Figueiredo** - [Gian-Figueiredo](https://github.com/Gian-Figueiredo)
 
 ## 📑 Sumário
 
@@ -74,24 +75,7 @@ Atributos críticos como `cartas` do `Baralho`, `mao` do `Jogador` e `turno` da 
 
 ## Tecnologias e Ferramentas
 
-* **Linguagem (Backend):** Python 3.12+
-* **Framework (Backend):** FastAPI
-* **Persistência:** *A definir* (SQLite, PostgreSQL ou outra)
-* **Linguagem (Frontend):** TypeScript
-* **Framework (Frontend):** React
-* **Bundler/Tooling:** Vite
-* **Router:** React Router v7 (HashRouter)
-* **Gerenciamento de Estado Global:** Zustand
-* **Estilização (CSS):** TailwindCSS
-* **Cliente HTTP:** Axios
-* **Gerenciamento de Requisições HTTP:** Tanstack Query
-* **Comunicação:** REST API assíncrona (HTTP + JSON)
-* **Documentação da API:** OpenAPI + Swagger UI (gerados automaticamente pelo FastAPI)
-* **Integração OpenAPI no Frontend:** Orval
-* **Hospedagem (Frontend):** GitHub Pages
-* **Hospedagem (Backend):** *A definir* (Heroku, Railway, Render ou outro)
-* **Hospedagem (Banco de Dados):** *A definir* (Heroku, Railway, Render ou outro)
-
+*(A definir)*
 ---
 
 # Justificativa das Tecnologias Escolhidas
